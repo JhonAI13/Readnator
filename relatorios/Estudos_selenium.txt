@@ -1,0 +1,480 @@
+
+=== DIRETÓRIO: Estudos_selenium ===
+
+
+=== DIRETÓRIO: Estudos_selenium\Aulas ===
+
+--- ARQUIVO: Estudos_selenium\Aulas\1 aula.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_03.html"
+browser.get(url)
+time.sleep(1)
+a = browser.find_element(By.TAG_NAME, "a")
+meu_ps = browser.find_elements(By.TAG_NAME, "p")
+time.sleep(1)
+print(meu_ps[-1].text)
+
+for ay in range(10):
+    a.click()
+    meu_ps = browser.find_elements(By.TAG_NAME, "p")
+    print(meu_ps[-1].text)
+
+time.sleep(600)
+
+# Ou, alternativamente, use input para esperar uma ação do usuário:
+# input("Pressione Enter para fechar o navegador...")
+browser.quit()
+
+
+--- ARQUIVO: Estudos_selenium\Aulas\1.1 ex.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+import time
+from pprint import pprint
+# {
+#     'h1': {
+#         'texto1': 'Boas vindas',
+#         'texto2': 'Outro texto'
+#     }
+# }
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/exercicio_01.html"
+browser.get(url)
+
+time.sleep(1)
+elementos_p = browser.find_elements(By.XPATH, '//p[@atributo]')
+
+actions = ActionChains(browser)
+dic = {'h1':{}}
+d = {}
+for elemento in elementos_p:
+    actions.move_to_element(elemento).perform()
+    valor_atributo = elemento.get_attribute('atributo')
+    texto_interno = elemento.text
+    d[valor_atributo] = texto_interno
+    dic['h1'] = d
+
+pprint(dic)
+
+
+
+
+time.sleep(60000)
+browser.quit()
+
+
+--- ARQUIVO: Estudos_selenium\Aulas\1.2 ex.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+from pprint import pprint
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/exercicio_02.html"
+browser.get(url)
+
+
+time.sleep(0.5)
+a = browser.find_element(By.ID, "ancora")
+meu_ps = browser.find_elements(By.TAG_NAME, "p")
+valor_esperado = meu_ps[1].text.split()[-1]
+valor_esperado
+
+while True:
+    a.click()
+    meu_ps = browser.find_elements(By.TAG_NAME, "p")
+    valor_atual = meu_ps[-1].text.split()[-1]
+    if valor_esperado == valor_atual:
+        break
+
+
+
+
+time.sleep(600)
+browser.quit()
+
+--- ARQUIVO: Estudos_selenium\Aulas\2 aula.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_04_a.html"
+browser.get(url)
+time.sleep(1)
+lista_n_ordenada = browser.find_element(By.TAG_NAME, 'ul')
+lis = lista_n_ordenada.find_elements(By.TAG_NAME, 'li')
+li = lis[0].find_elements(By.TAG_NAME, 'a')
+
+"""
+1. buscamos `ul`
+2. buscamos todos `li`
+3. No primeiro `li`, buscamos `a` e pegamos o seu texto
+
+ul
+    li
+        a
+            texto
+    li
+        a
+            texto
+
+"""
+
+--- ARQUIVO: Estudos_selenium\Aulas\2.1 aula .py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+
+def find_by_text(browser, tag, text):
+    """Encontrar O elemento com texto `text`
+
+    Args:
+        browser (browser): Instancia o browser 
+        tag (texto): Conteúdo que deve estar na tag
+        text (tag): Tag onde está o elemento
+    """
+    elementos = browser.find_elements(By.TAG_NAME, tag)
+    for elemento in elementos:
+        if elemento.text == text:
+            return elemento
+
+def find_by_href(browser, link):
+    """Encontrar O elemento `a` com o link `link`
+
+    Args:
+        browser (browser): Instancia o browser 
+        link (link): link que será procurado por todos os `a`
+    """  
+    elementos = browser.find_elements(By.TAG_NAME, 'a')
+
+    for elemento in elementos:
+        if elemento.get_attribute('href'):
+            return elemento
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_04_a.html"
+browser.get(url)
+time.sleep(1)
+
+# elemento_ddg = find_by_text(browser, 'a', 'DuckDuckGo')
+elemento_ddg = find_by_href(browser, 'ddg')
+
+--- ARQUIVO: Estudos_selenium\Aulas\2.2 aula .py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+
+def find_by_text(browser, tag, text):
+    """Encontrar O elemento com texto `text`
+
+    Args:
+        browser (browser): Instancia o browser 
+        tag (texto): Conteúdo que deve estar na tag
+        text (tag): Tag onde está o elemento
+    """
+    elementos = browser.find_elements(By.TAG_NAME, tag)
+    for elemento in elementos:
+        if elemento.text == text:
+            return elemento
+
+def find_by_href(browser, link):
+    """Encontrar O elemento `a` com o link `link`
+
+    Args:
+        browser (browser): Instancia o browser 
+        link (link): link que será procurado por todos os `a`
+    """  
+    elementos = browser.find_elements(By.TAG_NAME, 'a')
+
+    for elemento in elementos:
+        if elemento.get_attribute('href'):
+            return elemento
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_04_b.html"
+browser.get(url)
+time.sleep(0.008)
+
+l = ['um', 'dois', 'tres', 'quatro']
+for texto in l:
+    find_by_text(browser, 'div', texto).click()
+    time.sleep(0.008)
+
+for texto in l:
+    browser.back()
+    time.sleep(1)
+    
+for texto in l:
+    browser.forward()
+    time.sleep(1)
+
+--- ARQUIVO: Estudos_selenium\Aulas\2.3 aula .py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+from urllib.parse import urlparse
+from pprint import pprint
+
+
+def get_link(browser, elemento):
+    """Retorna um dicionario com links.
+
+    Args:
+        browser (browser): a instancia do navegador
+        elemento (elemento): webelement[aside, main, body, ul, or]
+    """
+    element = browser.find_element(By.TAG_NAME,elemento)
+    element_a = element.find_elements(By.TAG_NAME,'a')
+    d = {}
+    for a in element_a:
+        d[a.text] = a.get_attribute('href')
+    return d
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_04.html"
+browser.get(url)
+time.sleep(0.008)
+
+
+url_separada = urlparse(browser.current_url)
+
+
+pprint(get_link(browser,'aside'))
+"""
+browser.get(d['Aula 3'])
+browser.get(d['Aula 4'])
+"""
+
+exercicios = get_link(browser, 'main')
+pprint(exercicios)
+browser.get(exercicios['Exercício 3'])
+https://curso-python-selenium.netlify.app/exercicio_03.html
+
+--- ARQUIVO: Estudos_selenium\Aulas\2.4 ex.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+from urllib.parse import urlparse
+from pprint import pprint
+
+
+def get_alter(browser, elemento):
+    """Retorna um dicionario com links.
+
+    Args:
+        browser (browser): a instancia do navegador
+        elemento (elemento): webelement[aside, main, body, ul, or]
+    """
+    element = browser.find_element(By.TAG_NAME,elemento)
+    element_a = element.find_elements(By.TAG_NAME,'a')
+    d = {}
+    for a in element_a:
+        d[a.text] = a.get_attribute('href')
+    return d
+
+def get_pergunta(browser):
+    """Retorna um dicionario com links.
+
+    Args:
+        browser (browser): a instancia do navegador
+        elemento (elemento): webelement[aside, main, body, ul, or]
+    """
+    element = browser.find_element(By.TAG_NAME,'main')
+    p = element.find_elements(By.TAG_NAME,'p')
+    
+    return p[-1].text
+
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/exercicio_03.html"
+browser.get(url)
+time.sleep(0.008)
+
+element = browser.find_element(By.TAG_NAME,'main')
+a = element.find_element(By.TAG_NAME,'a')
+a.click()
+time.sleep(1)
+
+pergunta = get_pergunta(browser)
+partes = pergunta.split()
+numeros = [int(parte) for parte in partes if parte.isdigit()]
+num1,num2 = numeros[0], numeros[1]
+num = num1 * num2
+d = get_alter(browser,'main')
+for a, b in d.items():
+    if a != num:
+        browser.get(b)
+        break
+time.sleep(1)
+
+d = get_alter(browser,'main')
+for a, b in d.items():
+    if a == browser.title:
+        browser.get(b)
+        break
+time.sleep(1)
+
+url_separada = urlparse(browser.current_url)
+d = get_alter(browser,'main')
+for a, b in d.items():
+    if a == url_separada.path.replace('/', '')   :
+        browser.get(b)
+        break
+time.sleep(1)
+
+d = get_pergunta(browser)
+if 'diabão' in d:
+    browser.refresh()
+print('você conseguiu!')
+
+--- ARQUIVO: Estudos_selenium\Aulas\3 aula.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_05_a.html"
+browser.get(url)
+time.sleep(1)
+
+div_1 = browser.find_element(By.ID, 'lisp')  
+div_1 = browser.findelement(By.TAG_NAME, 'div')
+
+--- ARQUIVO: Estudos_selenium\Aulas\3.1 aula .py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_05_b.html"
+browser.get(url)
+time.sleep(1)
+
+top = browser.find_element(By.CLASS_NAME, 'topico')
+lin = browser.find_elements(By.CLASS_NAME, 'linguagens')
+
+for l in lin:
+    print(l.find_element(By.TAG_NAME,'p').text)
+for l in lin:
+    print(l.find_element(By.TAG_NAME,'h2').text)
+
+--- ARQUIVO: Estudos_selenium\Aulas\3.2 aula.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+
+def melhor_filme(browser,filme= 'WALLE', email='dudu@du.edu', telefone='(055)987654321'):
+    """Preenche o melhor formulário de 2020."""
+    browser.find_element(By.NAME, 'filme').send_keys(filme)
+    browser.find_element(By.NAME, 'email').send_keys(email) 
+    browser.find_element(By.NAME, 'telefone').send_keys(telefone)
+    browser.find_element(By.NAME, 'enviar').click()
+
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_05_c.html"
+browser.get(url)
+time.sleep(1)
+# f = browser.find_element(By.NAME, 'filme')  
+# f.send_keys('WALLE')
+# e = browser.find_element(By.NAME, 'email')  
+# e.send_keys('dudu@du.edu')
+# t = browser.find_element(By.NAME, 'telefone')  
+# t.send_keys('(055)987654321')
+# e = browser.find_element(By.NAME, 'enviar')
+# e.click()]
+melhor_filme(browser)
+
+--- ARQUIVO: Estudos_selenium\Aulas\3.3 aula.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+from urllib.parse import urlparse
+from json import loads
+
+def preencher_formulario(browser,nome= 'Jonathas', email='dudu@du.edu',senha= '123456789', telefone='987654321'):
+    """Preenche o melhor formulário"""
+    browser.find_element(By.NAME, 'nome').send_keys(nome)
+    browser.find_element(By.NAME, 'email').send_keys(email) 
+    browser.find_element(By.NAME, 'senha').send_keys(senha)
+    browser.find_element(By.NAME, 'telefone').send_keys(telefone)
+    browser.find_element(By.NAME, 'btn').click()
+
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/aula_05.html"
+browser.get(url)
+time.sleep(1)
+url_parseada = urlparse(browser.current_url)
+estrutura = {
+    'nome': 'Jonathas',
+    'email': 'dudu@du.edu',
+    'senha': '123456789',
+    'telefone': '987654321'
+}
+preencher_formulario(browser, **estrutura)
+
+time.sleep(1)
+d = loads(browser.find_element(By.TAG_NAME, 'textarea').text.replace('\'', "\""))
+assert d == estrutura
+
+--- ARQUIVO: Estudos_selenium\Aulas\3.4_ex.py ---
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+import time
+from urllib.parse import urlparse
+import urllib
+from json import loads
+
+def preencher_formulario(browser,nome= 'Jonathas', email='dudu@du.edu',senha= '123456789', telefone='987654321'):
+    """Preenche o melhor formulário"""
+    browser.find_element(By.NAME, 'nome').send_keys(nome)
+    browser.find_element(By.NAME, 'email').send_keys(email) 
+    browser.find_element(By.NAME, 'senha').send_keys(senha)
+    browser.find_element(By.NAME, 'telefone').send_keys(telefone)
+    browser.find_element(By.NAME, 'btn').click()
+
+def query_string_to_dict(query: str) -> dict:
+    """
+    Converte uma query string em um dicionário.
+
+    Args:
+        query (str): Query string no formato 'chave=valor&chave2=valor2&...'
+
+    Returns:
+        dict: Dicionário com as chaves e valores decodificados.
+    """
+    resultado = {}
+    # Divide a query string em pares chave=valor
+    for par in query.split('&'):
+        # Divide cada par em chave e valor; o "1" limita a divisão ao primeiro '='
+        chave, valor = par.split('=', 1)
+        # Decodifica o valor (por exemplo, converte '%40' em '@')
+        resultado[chave] = urllib.parse.unquote(valor)
+    return resultado
+
+
+browser = Chrome()
+url = "https://curso-python-selenium.netlify.app/exercicio_04.html"
+browser.get(url)
+time.sleep(1)
+
+preencher_formulario(browser)
+
+d = loads(browser.find_element(By.TAG_NAME, 'textarea').text.replace('\'', "\""))
+f = urlparse(browser.current_url).query
+f = query_string_to_dict(f)
+f = dict(list(f.items())[:-1])
+assert d == f
+
+--- ARQUIVO: Estudos_selenium\README.md ---
+# Estudos_selenium
+ 
+
+

@@ -1,0 +1,179 @@
+
+=== DIRETÓRIO: Experimentos.py ===
+
+
+=== DIRETÓRIO: Experimentos.py\Baixar audio(mp4) do Youtube ===
+
+--- ARQUIVO: Experimentos.py\Baixar audio(mp4) do Youtube\Baixar audio(mp4) do Youtube.py ---
+from pytube import YouTube
+
+# digite o link do video e o local que deseja salvar o audio do video
+link = "https://www.youtube.com/watch?v=xlVaNMdBP24"
+path = input("aqui")
+yt = YouTube(link)
+
+# Mostrar os detalhes do video
+print("Titulo: ", yt.title)
+print("Número de views: ", yt.views)
+print(f"Tamanho do vídeo: {yt.length} segundos")
+print("Avaliação do vídeo: ", yt.rating)
+
+# Configurando para audio
+ys = yt.streams.filter(only_audio=True)[0]
+
+
+# Começa o Dowload do Audio
+print("Baixando...")
+ys.download(path)
+print("Download completo!")
+
+
+
+=== DIRETÓRIO: Experimentos.py\Baixar videos do Youtube ===
+
+--- ARQUIVO: Experimentos.py\Baixar videos do Youtube\Baixar videos do Youtube.py ---
+from pytube import YouTube
+
+# digite o link do video e o local que deseja salvar o video
+link = input("digite o link do video que deseja baixar: ")
+path = input("digite o diretório que deseja salvar o video: ")
+yt = YouTube(link)
+
+# Mostrar os detalhes do video
+print("Titulo: ", yt.title)
+print("Número de views: ", yt.views)
+print(f"Tamanho do vídeo: {yt.length} segundos")
+print("Avaliação do vídeo: ", yt.rating)
+
+# Usa a maior resolução
+ys = yt.streams.get_highest_resolution()
+
+# Começa o Dowload do vídeo
+print("Baixando...")
+ys.download(path)
+print("Download completo!")
+
+
+
+=== DIRETÓRIO: Experimentos.py\Busca na Wikipédia - Copia ===
+
+--- ARQUIVO: Experimentos.py\Busca na Wikipédia - Copia\Busca na Wikipédia.py ---
+import wikipedia
+
+result = wikipedia.summary("Python")
+print(result)
+
+
+
+=== DIRETÓRIO: Experimentos.py\Deligando o PC ===
+
+--- ARQUIVO: Experimentos.py\Deligando o PC\Desligando o PC.py ---
+import os
+
+os.system("shutdown /s /t 1")
+
+
+
+=== DIRETÓRIO: Experimentos.py\Descobrindo ip de sites ===
+
+--- ARQUIVO: Experimentos.py\Descobrindo ip de sites\Descobrindo ip de sites.py ---
+import socket as s
+
+# Host que deseja descobrir o Ip
+host = 'instagram.com'
+
+# Captura o Ip do Host desejado
+Ip = s.gethostbyname(host)
+
+# Mostra resultados
+print(f'O IP do Host "' + host + '" é: ' + Ip)
+
+
+
+=== DIRETÓRIO: Experimentos.py\Editando_videos ===
+
+--- ARQUIVO: Experimentos.py\Editando_videos\exemplo.py ---
+"""moviepy-1.0.3"""
+
+from moviepy.editor import *
+from moviepy.video import fx
+
+
+# Puxo o video tem de ter h aqui       V
+clip = VideoFileClip("Editando_videos\heport.mp4")
+
+# Acelera o video em 2x
+clip = fx.all.speedx(clip , factor=None , final_duration=150)
+
+# Rendenizo o video
+clip.write_videofile("Editando_videos\heport2.mp4")
+
+
+
+=== DIRETÓRIO: Experimentos.py\Gerador de senha ===
+
+--- ARQUIVO: Experimentos.py\Gerador de senha\Gerador de senha.py ---
+from random import sample
+
+# Caracteres usados para formar
+caracteres = 'abcdefghijklmnopqrstuvwxyz' \
+             'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
+             '0123456789' \
+             '#@$%&*-=+/.'
+
+# Tamanho da senha
+tamanho = 30
+
+# Gera senha
+senha = "".join(sample(caracteres, tamanho))
+
+# Mostrar resultados
+print(senha)
+
+
+
+=== DIRETÓRIO: Experimentos.py\Grafico pizza ===
+
+--- ARQUIVO: Experimentos.py\Grafico pizza\Grafico pizza.py ---
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Valores do Gráfico #
+valores = np.array([35, 25, 25, 15])
+
+# Itens do Gráfico #
+itens = ['Maçãs', 'Bananas', 'Laranjas', 'Melancias']
+
+# Espaço entre as "fatias" do gráfico #
+expaço = [0.2, 0, 0, 0]
+
+# Monta o Gráfico e depois o mostra na tela #
+plt.pie(valores, labels=itens, explode=expaço, shadow=True)
+plt.show()
+
+
+--- ARQUIVO: Experimentos.py\README.md ---
+# Experimentos.py
+***
+ Este repositório será para commits de aprendizado. Em python atualmente.
+
+<div style="display: inline_block"><br>
+  <img align="center" height="300" width="300" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg">
+</div>
+
+
+
+=== DIRETÓRIO: Experimentos.py\Tradutor ===
+
+--- ARQUIVO: Experimentos.py\Tradutor\Tradutor.py ---
+from translate import Translator
+
+# Configurar a tradução
+s = Translator(from_lang='english', to_lang='pt-br')
+
+# Traduz o texto desejado
+res = s.translate('Hello world.')
+
+print(res)
+
+

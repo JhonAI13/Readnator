@@ -1,0 +1,1300 @@
+
+=== DIRETÓRIO: Javascript_estudos ===
+
+
+=== DIRETÓRIO: Javascript_estudos\Aulas ===
+
+--- ARQUIVO: Javascript_estudos\Aulas\01variáveis.js ---
+let idade = 5;
+console.log(idade);
+let altura = 180
+console.log(altura)
+// canelCase
+let nome = "Jonathas"
+console.log(nome)
+
+--- ARQUIVO: Javascript_estudos\Aulas\02constantes.js ---
+const valorIngressoAdulto = 20;
+// valorIngressoAdulto = 30;
+console.log(valorIngressoAdulto)
+
+--- ARQUIVO: Javascript_estudos\Aulas\03tiposPrimitivos.js ---
+let nome = "Rafael"; //string literal
+let idade = 24; //number literal
+let estaAprovado = true; //boolean
+let sobre ; // undefined (mais usado)
+let sobrenome = undefined; // undefined
+let corSelecionado = null // Redefinir um valor
+
+
+
+--- ARQUIVO: Javascript_estudos\Aulas\04tipagemDinâmica.js ---
+let nome = "Rafael"; //string literal
+let idade = 24; //number literal
+let estaAprovado = true; //boolean
+let sobre ; // undefined (mais usado)
+let sobrenome = undefined; // undefined
+let corSelecionado = null // Redefinir um valor
+
+// typeof dis o tipo.
+
+
+
+--- ARQUIVO: Javascript_estudos\Aulas\05tipagemDinâmica.js ---
+let nome = "Rafael"; //string literal
+let idade = 24; //number literal
+let estaAprovado = true; //boolean
+let sobre ; // undefined (mais usado)
+let sobrenome = undefined; // undefined
+let corSelecionado = null // Redefinir um valor
+
+let pessoa = {
+    nome: "Rafael",
+    idade: 35,
+    estaAprovado: true,
+    sobrenome: 'de souza',
+    corSelecionado: null 
+}
+console.log(pessoa)
+
+
+--- ARQUIVO: Javascript_estudos\Aulas\06arrays.js ---
+//  Arrays 
+
+let familia = [23,32,12,"jonathas",12,43];
+console.log(familia.length);
+console.log(familia[3]);
+let nomeDoColega = ["Ana", 22, "Candelaria"]
+
+--- ARQUIVO: Javascript_estudos\Aulas\07functions.js ---
+// Verbo + Subistantivo
+let corSite = "azul"
+function resetaCor(cor, tonalidade){
+    corSite = cor + ' ' + tonalidade;
+};
+
+console.log(corSite);
+resetaCor("verde", "claro")
+console.log(corSite)
+
+
+
+--- ARQUIVO: Javascript_estudos\Aulas\08tiposDeFunção.js ---
+// Realiza uma tarefa, não devolve nada
+function dizerNome(){
+    console.log('jonathas')
+}
+
+dizerNome();
+
+//faz uma tarefa e retorna algo.
+function multiplicarPorDois(valor){
+    return valor * 2;
+}
+
+// console.log(multiplicarPorDois(5))
+
+let resultado = multiplicarPorDois(5)
+
+console.log(resultado)
+
+--- ARQUIVO: Javascript_estudos\Aulas\09operadores.js ---
+// Operadores Aritiméticos
+// Operadores Atribuição
+// Operadores de Comparaçãp
+// Operadores Lógicos
+// Operadores Bitwive  
+
+--- ARQUIVO: Javascript_estudos\Aulas\10Aritiméticos.js ---
+// Operadores Aritiméticos
+let salario = 100;
+
+// +, -, *, / , **
+
+console.log(salario + salario);
+console.log(salario - salario);
+console.log(salario * salario);
+console.log(salario / salario);
+console.log(salario ** salario);
+
+// ++(imcremento) --(decremento)
+
+let idade= 18;
+
+console.log(idade++);
+console.log(idade)
+console.log(--idade)
+
+--- ARQUIVO: Javascript_estudos\Aulas\11Atribuição.js ---
+// Operadores Atribuição
+let valorTecladoGamer = 100;
+// valorTecladoGamer = valorTecladoGamer + valorTecladoGamer;
+valorTecladoGamer += valorTecladoGamer;
+console.log(valorTecladoGamer)
+
+--- ARQUIVO: Javascript_estudos\Aulas\12Igualdade.js ---
+// Operadores de igualdade
+// Igualdade escrita
+console.log(1 === 1);
+console.log("1" === 1)
+
+// Igualdade solta
+console.log(1 == 1);
+console.log(1 == "1");
+
+--- ARQUIVO: Javascript_estudos\Aulas\13Ternário.js ---
+// Operadores Ternário
+// Tem um cliente, 100 premium, comum
+let pontos = 101;
+let tipo = pontos > 100 ? "premium" : "comum";
+console.log(tipo);
+
+--- ARQUIVO: Javascript_estudos\Aulas\14Lógico.js ---
+// Operadores Logíco
+
+// Operador Logíco e (&&)
+//retorna TRUE se os dois operandos forem true
+
+// console.log(true && false)
+
+
+// let maiorDeIdade = true;
+// let possueCarteiraDeTrabalho = false
+// let podeAplicar = maiorDeIdade && possueCarteiraDeTrabalho
+
+// console.log(podeAplicar)
+
+//Operador Logíco ou (||)
+//Retorna true se um dos operandos forem true
+
+let maiorDeIdade = true;
+let possueCarteiraDeTrabalho = false
+let podeAplicar = maiorDeIdade || possueCarteiraDeTrabalho
+
+console.log("Pode aplicar: ",podeAplicar)
+
+//Operador Logíco not (!)
+let candidatoRecusado = !podeAplicar
+
+console.log("Candidato Recusado: ", candidatoRecusado)
+
+--- ARQUIVO: Javascript_estudos\Aulas\15comparaçõesComValoresNãoBoleanos.js ---
+// Falsy
+// undefined
+// null
+// 0
+// false
+// ""
+// NaN - not a number
+
+// Truthy
+
+let corPersonalizada ='Vermelho';
+let corPadrão = "Azul";
+let corPerfil = corPersonalizada || corPadrão;
+
+console.log(corPerfil)
+
+--- ARQUIVO: Javascript_estudos\Aulas\16trocandoValoresDeVariaveis.js ---
+let a = "vermelho";
+let b = "Azul";
+
+let c = a;
+a = b;
+b = c;
+
+console.log(a);
+console.log(b)
+
+
+--- ARQUIVO: Javascript_estudos\Aulas\17ifElse.js ---
+// if..Else
+
+// Se a hora estiver entre 06:00 até 12:00 :Bom dia!
+// Se estiver entre 12:00 até 18:00 : Boa tarde! 
+// Caso contrario : Boa noite!
+
+let hora = 12;
+
+if (hora > 6 && hora < 12.1 ){
+    console.log("Bom dia !")
+}
+else if(hora > 12.1 && hora < 18){
+    console.log("Boa tarde !")
+}
+else {
+    console.log("Boa noite !")
+}
+
+--- ARQUIVO: Javascript_estudos\Aulas\18switchCase.js ---
+let permissão; // comum,gerente,diretor
+permissão = ""
+switch(permissão){
+    case 'comum' :
+        console.log("usuário comum");
+        break
+    
+    case 'gerente' :
+        console.log("usuário gerente");
+        break
+            
+    case 'diretor' :
+        console.log("usuário diretor");
+        break
+    
+    default:
+        console.log("Usuário não reconhecido!")
+}
+
+--- ARQUIVO: Javascript_estudos\Aulas\19for.js ---
+// 1.For
+for (let i = 1; i <= 5 ; i++){
+    if(i % 2 !== 0){
+        console.log(i);
+    }
+}
+
+--- ARQUIVO: Javascript_estudos\Aulas\20while.js ---
+let i = 5;
+
+while (i >= 1) {
+    if(i % 2 !== 0){
+        console.log(i);
+    }
+    i--;
+}
+
+--- ARQUIVO: Javascript_estudos\Aulas\21dowhile.js ---
+let i = 0;
+
+do { // Executa primeiro
+  console.log("digitando!" + i);
+  i++;
+} while (i < 3) // Verifica depois
+
+--- ARQUIVO: Javascript_estudos\Aulas\22for-in.js ---
+// for-in
+
+const pessoa = {
+  nome:"jonathas",
+  idade: 25 
+};
+// key-value
+for (let chave in pessoa) {
+  console.log(chave, pessoa[chave]);
+}
+
+const cores = ['vermelho', 'azul', 'verde'];
+
+for (let indice in cores) {
+  console.log(indice,cores[indice])
+}
+
+--- ARQUIVO: Javascript_estudos\Aulas\23for-off.js ---
+// for-off
+const cores = ['vermelho', 'azul', 'verde'];
+for (let cor of cores) {
+  console.log(cor);
+}
+
+--- ARQUIVO: Javascript_estudos\Aulas\24objetos.js ---
+// Oque são objetos ?
+// Chave-Valor (Key-Value pair)
+let marcaCelular = 'LG';
+let tamanhoTelaVertical = 155;
+let tamanhoTelaHorisontal = 75;
+let capacidadeBateria = 5000;
+
+const celular = {
+    marcaCelular : 'ASUS',
+    tamanhoTela : {
+        vertical : 155,
+        horizontal : 75
+    }, 
+    capacidadeBateria: 5000,
+    ligar: function() {
+        console.log("Fazendo ligação")
+    }
+}
+
+celular.capacidadeBateria = 10;
+console.log(celular.capacidadeBateria);
+celular.ligar();
+
+--- ARQUIVO: Javascript_estudos\Aulas\25factoryFunctions.js ---
+const celular = {
+    marcaCelular : 'ASUS',
+    tamanhoTela : {
+        vertical : 155,
+        horizontal : 75
+    }, 
+    capacidadeBateria: 5000,
+    ligar: function() {
+        console.log("Fazendo ligação")
+    }
+}
+// JavaScrit Aula 34 - Factory Functions (Função de Fábrica)
+function criarCelular (marcaCelular,tamanhoTela, capacidadeBateria) {
+    return {
+        marcaCelular : marcaCelular,
+        tamanhoTela : tamanhoTela, 
+        capacidadeBateria, // Se o valor dos objetos forem o mesmo, pode deixar assim.
+        ligar() {
+            console.log("Fazendo ligação")
+        }
+    }
+}
+
+const celular1 =  criarCelular("LG",5.5, 5000);
+console.log(celular1)
+
+--- ARQUIVO: Javascript_estudos\Aulas\26constructorFunctions copy.js ---
+// camelCase umDoisTresQuatro
+// function criarCelular (marcaCelular,tamanhoTela, capacidadeBateria) {
+//     return {
+//         marcaCelular : marcaCelular,
+//         tamanhoTela : tamanhoTela, 
+//         capacidadeBateria, // Se o valor dos objetos forem o mesmo, pode deixar assim.
+//         ligar() {
+//             console.log("Fazendo ligação")
+//         }
+//     }
+// }
+
+// Pascal Case - UmDoisTresQuatro
+function Celular(marcaCelular,tamanhoTela,capacidadeBateria) {
+    this.marcaCelular = marcaCelular,
+    this.tamanhoTela = tamanhoTela,
+    this.capacidadeBateria = capacidadeBateria,
+    this.ligar = function() {
+        console.log("Fazendo ligação...");
+    }
+}
+const celular = new Celular("asus",5.5,5000);
+console.log(celular);
+celular.ligar()
+
+--- ARQUIVO: Javascript_estudos\Aulas\27naturedaObjetos.js ---
+// Natureza dinamica de objetos
+const mouse = {
+    cor : "red",
+    marca : "dezz"
+}
+
+mouse.velocidade = 5000;
+mouse.trocarDPI = function(){
+    console.log("mudando DPI ")
+}
+delete mouse.velocidade;
+delete mouse.cor;
+console.log(mouse)
+
+--- ARQUIVO: Javascript_estudos\Aulas\28clonandoObjetos.js ---
+const celular = {
+    marcaCelular : 'ASUS',
+    tamanhoTela : {
+        vertical : 155,
+        horizontal : 75
+    },
+    ligar: function() {
+        console.log("Fazendo ligação")
+    }
+}
+
+const novoObjeto = Object.assign({
+    bateria : 5000
+},celular)
+console.log(novoObjeto)
+
+const objeto2 = {...celular};
+console.log(objeto2)
+
+--- ARQUIVO: Javascript_estudos\Aulas\29math.js ---
+console.log(Math.random())
+console.log(Math.max(1,2,6,1), Math.min(1,2,6,1))
+
+
+--- ARQUIVO: Javascript_estudos\Aulas\30Strings.js ---
+// Tipo primitivos
+const mensagem = "minha primeira mensagem";
+console.log(typeof mensagem);
+// Tipo objeto
+const outraMensagem = new String(' Bom dia ');
+console.log(typeof outraMensagem);
+console.log(outraMensagem.length);
+console.log(outraMensagem[2]);
+console.log(outraMensagem.includes('dia'));
+console.log(outraMensagem.startsWith(" Bom"));
+console.log(outraMensagem.endsWith(' '));
+console.log(outraMensagem.includes('a'));
+console.log(outraMensagem.replace("Bom", "Boa"));
+console.log(outraMensagem.trim());
+console.log(outraMensagem.trim().split(' '));
+
+--- ARQUIVO: Javascript_estudos\Aulas\31templateLiteral.js ---
+// Template Literal
+//  Isto é uma sequencia de escape V escape sequences
+const mensagem = "Oi isto é minha \n \'primeira\' mensagem";
+// Object {}
+// Boolean true,false
+// String ","
+// Template ``
+const outraMensagem = `Oi isso é a minha 
+'primeira' mensagem`
+
+const nome = 'Rafael'
+const email = 
+`Ola Fulano
+
+Obrigado por inscrever aqui
+
+Para acompanhar não se esqueça de ativar
+
+ATT
+${nome}.`
+console.log(email)
+
+--- ARQUIVO: Javascript_estudos\Aulas\32date.js ---
+// Date
+const data1 = new Date();
+const data2 = new Date("March 06 2019 09:30")
+const data3 = new Date(2019,02,06,9,30);
+
+data1.toISOString()
+
+--- ARQUIVO: Javascript_estudos\Aulas\33adicionandoElementos.js ---
+// Adicionando elementos
+const numeros = [1,2,3];
+
+//  Inicio
+numeros.unshift(0);
+console.log(numeros);
+// Meio                 V se ira apagar ou não
+numeros.splice(2, 0, 'a');
+console.log(numeros)
+// Fim
+numeros.push(5);
+console.log(numeros)
+
+
+--- ARQUIVO: Javascript_estudos\Aulas\34ondeElementosPrimitivos.js ---
+// Encontrar elementos primitivos
+const numeros = [1,2,3,4,1];
+
+console.log(numeros.indexOf(1));
+console.log(numeros.lastIndexOf(1));
+console.log(numeros.indexOf(2) !== -1);
+console.log(numeros.includes(2))
+
+--- ARQUIVO: Javascript_estudos\Aulas\35ondeElementosReferencia.js ---
+// Encontra elementos tipos de referencia
+
+const marcar = [
+    {id:1, nome:'a'},
+    {id:1, nome:'b'}
+];
+
+console.log(marcar.find(function(marca){
+    return marca.nome === 'a';
+}))
+
+--- ARQUIVO: Javascript_estudos\Aulas\36arrowFunctions.js ---
+// Arrow functions
+const marcar = [
+    {id:1, nome:'a'},
+    {id:1, nome:'b'}
+];
+
+console.log(marcar.find((marca)=>marca.nome === 'a'))
+console.log(marcar.find(marca=>marca.nome === 'a'))
+
+--- ARQUIVO: Javascript_estudos\Aulas\37removendoElementos.js ---
+// Removendo elementos
+const numeros = [1,2,3,4,5,6];
+numeros.push();
+numeros.unshift();
+numeros.splice();
+
+
+// Final
+const ultimo = numeros.pop();
+console.log(ultimo);
+console.log(numeros);
+// Inicio
+console.log(numeros.shift());
+console.log(numeros)
+// Meio
+console.log(numeros.splice(2,1));
+console.log(numeros)
+
+--- ARQUIVO: Javascript_estudos\Aulas\38esvasiandoArray.js ---
+// Esvaziando um array
+let numeros = [1,2,3,4,5,6];
+let outros = numeros;
+
+// Solução 1
+// numeros = [];
+// console.log(numeros,outros);
+// >>>[] [ 1, 2, 3, 4, 5, 6 ]
+
+// Solução 2
+// numeros.length=0;
+// console.log(numeros,outros);
+// >>>[] []
+
+// Solução 3
+// numeros.splice(0,numeros.length);
+// console.log(numeros, outros);
+// >>>[] []
+
+// Solução 4
+while (numeros.length > 0)
+    numeros.pop();
+console.log(numeros,outros)
+
+--- ARQUIVO: Javascript_estudos\Aulas\39combOuDividArray.js ---
+// Conbinando e contando Arrays
+const primeiro = [{id:1},2,3];
+const segundo = [4,5,6];
+primeiro[0].id = 10;
+// Combinar
+const combinado = primeiro.concat(segundo);
+console.log(combinado);
+// Dividir
+const Dividir = combinado.slice(0);
+console.log(Dividir)
+
+--- ARQUIVO: Javascript_estudos\Aulas\40operadorSpread.js ---
+// Conbinando e contando Arrays
+const primeiro = [{id:1},2,3];
+const segundo = [4,5,6];
+primeiro[0].id = 10;
+// Combinar
+const combinado = primeiro.concat(segundo);
+console.log(combinado);
+// Dividir
+const Dividir = combinado.slice(0,3);
+console.log(Dividir)
+// clonar
+const clonar = combinado.slice(0);
+console.log(clonar)
+
+// Spread
+// Combinar com spread
+const combinado1 = [...primeiro,...segundo];
+console.log(combinado1);
+// Clonar com spread
+const clonar1 = [...combinado1];
+console.log(clonar1)
+
+--- ARQUIVO: Javascript_estudos\Aulas\41foreach.js ---
+// Interando um array
+const numero = [1,2,3,4,5];
+
+// forEach
+numero.forEach((numero,indice) =>
+    console.log(numero,indice))
+
+--- ARQUIVO: Javascript_estudos\Aulas\42combinandoArrays.js ---
+// Combinando Arrays
+const numero = [1,2,3,4,5];
+
+const combinado = numero.join(', ');
+console.log(combinado)
+
+const frase = "olá bem vindo ao curso";
+const resultado = frase.split(' ')
+console.log(resultado)
+
+console.log(resultado.join('/'))
+
+--- ARQUIVO: Javascript_estudos\Aulas\README.md ---
+# Javascript_estudos
+ Esta pasta é para aulas do curso do Jhonatan (Dev Aprender), e mais alguns.
+
+<div style="display: inline_block"><br>
+  <img align="center" height="300" width="300" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg">
+</div>
+
+
+=== DIRETÓRIO: Javascript_estudos\EX ===
+
+--- ARQUIVO: Javascript_estudos\EX\01sucessorAntecessor.js ---
+let numero = 91;
+
+console.log("O sucessor de", numero, "é" ,++numero);
+console.log("O antecessor de", --numero, "é" ,--numero);
+
+--- ARQUIVO: Javascript_estudos\EX\02media.js ---
+let nota1 = 9;
+let nota2 = 9.7;
+
+let media = (nota1 + nota2) / 2
+console.log("A media entre", nota1, "e" , nota2, ":", media.toFixed(2))
+
+
+--- ARQUIVO: Javascript_estudos\EX\03dobroRaizTriplo.js ---
+let numero = 643;
+
+console.log("O dobro de", numero, "é:" ,2 * numero);
+console.log("O triplo de", numero, "é:" ,3 *numero);
+console.log("A raiz quadrada de", numero, "é:" , (numero ** (1/2)).toFixed(2))
+
+--- ARQUIVO: Javascript_estudos\EX\04conversosorDeMetros.js ---
+let numero = 64;
+
+console.log("Em centimetos", numero, "metros é:" ,100 * numero, "cm");
+console.log("Em milimetros", numero, "metros é:" ,1000 * numero, "mm");
+
+--- ARQUIVO: Javascript_estudos\EX\05Tabuada.js ---
+let numero = 6;
+
+console.log( numero, "X" ,1 , "=", numero * 1);
+console.log( numero, "X" ,2 , "=", numero * 2);
+console.log( numero, "X" ,3 , "=", numero * 3);
+console.log( numero, "X" ,4 , "=", numero * 4);
+console.log( numero, "X" ,5 , "=", numero * 5);
+console.log( numero, "X" ,6 , "=", numero * 6);
+console.log( numero, "X" ,7 , "=", numero * 7);
+console.log( numero, "X" ,8 , "=", numero * 8);
+console.log( numero, "X" ,9 , "=", numero * 9);
+console.log( numero, "X" ,10 , "=", numero * 10);
+
+--- ARQUIVO: Javascript_estudos\EX\06quantidadeDeTinta.js ---
+let altura = 2.6;
+let largura = 6;
+
+let baldes = (largura * altura) / 2;
+let area = largura * altura;
+// ((l * l2) / 2,(l * l2)))
+console.log("Você vai precisar de", baldes.toFixed(2), "baldes,para pintar", area.toFixed(2) ,"metros cubicos de parede." );
+
+
+--- ARQUIVO: Javascript_estudos\EX\07desconto.js ---
+let valor = 100.10;
+
+let cinco = valor * 0.05
+// ((l * l2) / 2,(l * l2)))
+console.log("o valor do produto descontado 5% é: ", cinco.toFixed(2) , "Reais");
+
+
+--- ARQUIVO: Javascript_estudos\EX\08Fahrenheit.js ---
+let celcios = 37;
+
+let fahrennheit = (celcios * 9 / 5) + 32;
+
+console.log("São", fahrennheit.toFixed(2) , "Fahrennheit");
+
+
+--- ARQUIVO: Javascript_estudos\EX\09maiorNumero.js ---
+// Escreva uma função que usa 2 números e retorna o maior entre eles
+
+// let numeros = [1 ,8 , 7 , 19];
+// var inta = 0;
+
+// for (let local of numeros) {  
+//   if(inta < local){
+//     var inta = local;
+//   }
+// }
+// console.log(inta)
+
+let numeros = [1 ,8 , 7 , 18];
+var inta = 0;
+
+for (let local of numeros) {  
+  inta < local ? inta = local: NaN;
+}
+console.log(inta)
+
+--- ARQUIVO: Javascript_estudos\EX\10digitosSeparados.js ---
+// Faça um proggrama que leia um numero de 0 a 9999 e mostre cada um dos digitos separados.
+
+let n = 8902
+console.log(n)
+
+console.log("unidade" ,  n / 1 % 10)
+n -= (n / 1 % 10)
+n /= 10
+console.log("desena" ,  n / 1 % 10)
+n -= (n / 1 % 10)
+n /= 10
+console.log("centena" ,  n / 1 % 10)
+n -= (n / 1 % 10)
+n /= 10
+console.log("milhar" ,  n / 1 % 10)
+
+
+
+--- ARQUIVO: Javascript_estudos\EX\11parOuImpar.js ---
+let n = 3
+
+if ( n & 2 != n / 2){
+    console.log("O numero", n ,"é impar")
+}
+else {
+    console.log("O numero", n ,"é par")
+}
+
+--- ARQUIVO: Javascript_estudos\EX\12anoBisesto.js ---
+let ano = 1988;
+// Se o ano for uniformemente divisível por 4, vá para a etapa 2. Caso contrário, vá para a etapa 5.
+// Se o ano for uniformemente divisível por 100, vá para a etapa 3. Caso contrário, vá para a etapa 4.
+// Se o ano for uniformemente divisível por 400, vá para a etapa 4. Caso contrário, vá para a etapa 5.
+if (ano % 4 == 0){
+    console.log("O ano", ano, "é bicesto, e tem 366dias")
+}
+else if (ano % 100 == 0){
+    console.log("O ano", ano, "é bicesto, e tem 366dias")
+}
+else if (ano % 400 == 0){
+    console.log("O ano", ano, "é bicesto, e tem 366dias");
+}
+else {
+    console.log("O ano", ano, "é normal e tem 365 dias");
+}
+
+ano % 4 == 0 || ano % 400 == 0 || ano % 100 == 0 ?
+    console.log("O ano", ano, "é bicesto, e tem 366dias"):
+console.log("O ano", ano, "é normal e tem 365 dias");
+
+
+if(ano % 4 == 0 || ano % 400 == 0 || ano % 100 == 0){
+    console.log(`O ano ${ano} é bissexto e tem 366 dias`)
+}
+else {
+    console.log(`O ano ${ano} não é bissexto e tem 365 dias` )
+}
+
+--- ARQUIVO: Javascript_estudos\EX\13menorNumer.js ---
+let numeros = [12 ,8 , 7 , 18];
+var inta = 0;
+let c = numeros.length - 1;
+
+for (let i = 0; i <= c ; i++) {
+    if (i==0){
+        inta = numeros[i]
+    }
+    else if (inta > numeros[i]) {
+        inta = numeros[i]
+    }
+    // i == 0 ? 
+    //     inta = numeros[i] : 
+    // inta > numeros[i] ? 
+    //     inta = numeros[i]: 
+    // NaN;
+}
+console.log('O menor numero é', inta)
+
+--- ARQUIVO: Javascript_estudos\EX\14menorEMaior.js ---
+let numeros = [12 ,8 , 7 , 18];
+var intaMaior = 0;
+var intaMenor = 0;
+let c = numeros.length - 1;
+
+for (let i = 0; i <= c ; i++) {
+    if (i==0){
+        intaMaior = numeros[i];
+        intaMenor = numeros[i]
+    }
+    else if (intaMaior > numeros[i]) {
+        intaMaior = numeros[i]
+    }
+    else if (intaMenor < numeros[i]) {
+        intaMenor = numeros[i]
+    }
+}
+console.log(`O maior numero é ${intaMaior}`);
+console.log(`O menor numero é ${intaMenor}`)
+
+--- ARQUIVO: Javascript_estudos\EX\15éTriangulo.js ---
+let a = 212
+let b = 233
+let c = 112
+
+
+if (a + b > c & a + c > b & b + c > a){
+    console.log(`Os valores ${a}cm, ${b}cm e ${c}cm, formam um triangulo.`)
+}
+else{
+    console.log(`Os valores ${a}cm, ${b}cm e ${c}cm, formam um não triangulo.`)
+}
+
+--- ARQUIVO: Javascript_estudos\EX\16emprestimo.js ---
+let salario = 1000
+let valorDaCasa = 3000
+let vezesAPagar = 4
+
+// tira 30% do salario
+let sl = salario * 0.3
+// transforma anos em meses
+let ml = vezesAPagar * 12
+// descobrir o valor das parcelas
+let v = valorDaCasa / ml
+
+if (v >= sl){
+    console.log(`Seu financiamento não foi liberado`)
+}
+else {
+    console.log('Seu financiamento foi aprovado')
+    console.log(`Devera pagar ${v} por mes, por ${ml}meses`)
+}
+
+
+--- ARQUIVO: Javascript_estudos\EX\17binarioHexaOct.js ---
+let a = 9
+
+console.log(`O valor em binario é: ${a.toString(2)}`)
+console.log(`O valor em hexadecimal é: ${a.toString(16)}`)
+console.log(`O valor em Octal é: ${a.toString(8)}`)
+
+--- ARQUIVO: Javascript_estudos\EX\18doisNumeros.js ---
+let a = 22
+let b = 9
+
+a > b ?
+    console.log(`O numero ${a} é maior.`):
+a < b ?
+    console.log(`O numero ${b} é maior`):
+console.log(`Os numeros ${a} e ${b} são iguais`)
+
+--- ARQUIVO: Javascript_estudos\EX\19queDiaÉ.js ---
+// Obtém a data/hora atual
+var data = new Date();
+
+// Guarda cada pedaço em uma variável
+var dia     = data.getDate();           // 1-31
+var dia_sem = data.getDay();            // 0-6 (zero=domingo)
+var mes     = data.getMonth();          // 0-11 (zero=janeiro)
+var ano2    = data.getYear();           // 2 dígitos
+var ano4    = data.getFullYear();       // 4 dígitos
+var hora    = data.getHours();          // 0-23
+var min     = data.getMinutes();        // 0-59
+var seg     = data.getSeconds();        // 0-59
+var mseg    = data.getMilliseconds();   // 0-999
+var tz      = data.getTimezoneOffset(); // em minutos
+
+// Formata a data e a hora (note o mês + 1)
+var str_data = dia + '/' + (mes+1) + '/' + ano4;
+var str_hora = hora + ':' + min + ':' + seg;
+
+// Mostra o resultado
+console.log('Hoje é ' + str_data + ' às ' + str_hora);
+
+--- ARQUIVO: Javascript_estudos\EX\20equilateroIsoscelesEscaleno.js ---
+let a = 4
+let b = 2
+let c = 3
+
+
+if (a + b > c & a + c > b & b + c > a){
+    console.log(`Os valores ${a}cm, ${b}cm e ${c}cm, formam um triangulo.`)
+    if (a == b & a == c & c == b){
+        console.log('EQUILATERO')
+    }
+    else if (a == b || b == a || c == a || c == b) {
+        console.log('ISÓSCELES')
+    }
+    else {
+        console.log('ESCALENO')
+    }
+}
+else{
+    console.log(`Os valores ${a}cm, ${b}cm e ${c}cm, formam um não triangulo.`)
+}
+
+--- ARQUIVO: Javascript_estudos\EX\21contagemRegreciva.js ---
+console.log("Os fogos serão lançados em 10")
+
+for(let i = 10;i>=0;i--)  {
+    console.log(i)
+}
+let i = 10
+while (i >= 0) {
+    console.log(i);
+    i--;
+}
+
+--- ARQUIVO: Javascript_estudos\EX\22Fizzbuzz.js ---
+// Divisível por só 3 = Fizz
+// Divisível por só 5 = Buzz
+// Divisível por 3 e 5 = FizzBuzz
+// Não divisível por 3 ou 5 = entrada
+// Não é um número = "Não é um número"
+const resultado = fizzBuzz(true);
+console.log(resultado)
+
+function fizzBuzz(entrada){
+    if (typeof entrada !== "number")
+        return "Não é um número";
+    else if (entrada % 3 == 0 & entrada % 5 == 0 )
+        return "FizzBuzz";
+    else if (entrada % 3 == 0 ) 
+        return "Fizz";
+    else if(entrada % 5 == 0 ) 
+        return "Buzz";
+    else
+        return entrada;
+}
+
+--- ARQUIVO: Javascript_estudos\EX\23medidorDeVelocidade.js ---
+// Velocidade máxima de até 70
+// a cada 5km acima de limite você ganha 1 ponto 
+// caso pontos maior que 11 -> "Carreira Suspendida"
+const resultado = verificaVelocidade(78);
+console.log(resultado)
+
+function verificaVelocidade(entrada){
+    const velocidadeMaxima = 70
+    const kmPorPonto = 5
+    if (typeof entrada !== "number")
+        return "Não é um número";
+    else if (entrada <= velocidadeMaxima)
+        return "ok";
+    else if (entrada >= 130){
+            return "Carteira Suspensa.";
+        }
+    const pontos = (entrada - velocidadeMaxima) / kmPorPonto;
+
+    return `Pontos:${Math.floor(pontos)}`
+} 
+
+--- ARQUIVO: Javascript_estudos\EX\24parOuImpar.js ---
+// Receber uma quantidade de valores para avaliar
+// função exibe se cada valor é par ou impar 
+
+exibirTipo(20)
+function exibirTipo(limite) {
+    for(let i = 0; i <= limite; i++)  {
+        if (i % 2 == 0)
+            console.log(`${i} é par`);
+        else 
+            console.log(`${i} é impar`)
+    }
+}
+
+--- ARQUIVO: Javascript_estudos\EX\25encontreString.js ---
+// Cria um método para ler propriedade de um objeto e 
+// exibir somente as propriedades do tipo string que estão nesse objeto 
+
+const filme = {
+    titulo : 'vingadores',
+    ano : 2018,
+    diretor : 'lucas',
+    personagem : 'thor'
+}
+exibirPropriedades(filme)
+function exibirPropriedades(obj){
+    for (let chave in obj) {
+        if (typeof obj[chave] === "string")
+            console.log(chave, obj[chave])
+    }
+}
+
+--- ARQUIVO: Javascript_estudos\EX\26+3e5.js ---
+// Criar função somar que retorna a 
+// soma de todos os multiplos
+
+
+somar(10)
+
+function somar(limite){
+    let numero = 0
+    for (i = 0; i <= limite; i++){
+        if (i % 3 == 0 || i % 5 == 0 )
+        numero += i
+    }
+    console.log(numero)
+}
+
+--- ARQUIVO: Javascript_estudos\EX\27mediaEscolar.js ---
+// Exercício noa escolar
+// Obter a media a partir de um array 
+
+// 0 -59    = F
+// 60-69    = D 
+// 70-79    = C
+// 80-89    = B
+// 90-100   = A 
+
+const array = [77, 99, 50]
+
+console.log(mediaDoAluno(array))
+
+// function mediaDoAluno(notas) {
+//     const tamanhoArray = notas.length;
+//     let somaNotas = 0
+//     for (let i = 0; i <= tamanhoArray - 1; i++) {
+//         somaNotas += notas[i]
+//     }
+//     const media = somaNotas / tamanhoArray
+//     const converção = {
+//         60: 'D',
+//         70: 'C',
+//         80: 'B',
+//         90: 'A' 
+//     }
+//     if (media <= 59) 
+//         return "F"
+//     else if ( media == 100){
+//         return "A"
+//     }
+//     else {
+//         for(let i = 60; i <= 100; i += 10){
+//             if (media <= (i + 9) & media >= i)
+//                 return converção[i]
+//         }
+//     }
+
+// }
+
+function mediaDoAluno(notas) {
+    const media = calcularMedia(notas)
+    if (media < 59) return "F";
+    if (media < 69) return "D";
+    if (media < 79) return "C";
+    if (media < 89) return "B";
+    return "A"
+}
+
+function calcularMedia(array){
+    
+    let soma = 0;
+    for (let valor of array) {
+        soma += valor;
+    }
+    return soma / (array.length);
+}
+
+--- ARQUIVO: Javascript_estudos\EX\28contadorAsteriscos.js ---
+// Criar uma função que exiba a quandidade do * 
+// Qua aquela linha possui 
+
+exibirNumerosPrimos(5);
+
+function exibirNumerosPrimos(linhas) {
+    const str = '*'
+    let asterisco = '*'
+    for (let i = 0; i <= linhas - 1; i++){
+        console.log(asterisco)
+        asterisco += str
+    }
+}
+
+--- ARQUIVO: Javascript_estudos\EX\29numerosPrimos.js ---
+// Criar função para mostrar numeros primos
+
+// Primos
+// compostos
+
+exibirNumerosPrimos(15);
+
+// function exibirNumerosPrimos(limite) {
+//     for (let i = 1; i <= limite; i++){
+//         let teste = numeroPrimo(i)
+//         if (teste == 2) {
+//             console.log(i)
+//         }
+//     }
+// }
+
+// function numeroPrimo (numero) {
+//     let num = 0
+//     for (let s = numero; s >= 1; s--){
+//         if (numero % s == 0){
+//             num += 1
+//         }
+//     }
+//     return num
+// }
+
+function exibirNumerosPrimos (limite) {
+    for (let numero = 2; numero <= limite; numero++){
+        let teste = ehPrimo(numero);
+        if(teste) console.log(numero)
+    }
+}
+
+function ehPrimo (numero){
+    for (let divisor = 2; divisor < numero; divisor++){
+        if(numero % divisor == 0) {
+            return false
+        }
+    }
+    return true
+
+}
+
+--- ARQUIVO: Javascript_estudos\EX\30objEndereço.js ---
+// JavaScrit - Objeto edereço
+
+// Criar um objet endereço que contem
+// Rua, cidade, CEP, exibirEndereço(endereço)
+
+// const endereço = {
+//     rua: "Rua Presidente Vargas",
+//     cidade: "Rio de Janeiro",
+//     cep: 25758234,
+//     exibirEndereço: function () {
+//         console.log(`${this.rua}, ${this.cidade}, CEP: ${this.cep}`)
+//     }    
+// }
+
+// endereço.exibirEndereço()
+
+let endereço = {
+        rua: "Rua Presidente Vargas",
+        cidade: "Rio de Janeiro",
+        cep: 25758234
+}
+
+function exibirEndereço(endereço) {
+    for (let chave in endereço) {
+        console.log(chave,endereço[chave])
+    }
+}
+
+exibirEndereço(endereço)
+
+--- ARQUIVO: Javascript_estudos\EX\31igualdadeObjetos.js ---
+// Igualdade de Objetos 
+
+function Endereço(rua, cidade, cep) {
+    this.rua = rua,
+    this.cidade = cidade,
+    this.cep = cep
+}
+const endereço1 = new Endereço('a','b','c');
+const endereço2 = new Endereço('a','b','c');
+const endereço3 = endereço1
+function sãoIguais(endereço1,endereço2) {
+    // comparar se as propriedades são iguais
+    // return endereço1.rua === endereço1.rua &&
+    //         endereço1.cidade === endereço2.cidade &&
+    //         endereço1.cep === endereço2.cep
+    for(ind in endereço1,endereço2){
+        if(endereço1[ind] === endereço2[ind]){
+            return true;
+        }
+        else return false;
+    }
+}
+
+console.log(sãoIguais(endereço1,endereço2))
+function temEndereçoMemoriaIguais(endereço1,endereço2) {
+    // compando se a referencia do objeto aponta para o mesmo local na memoria
+    return endereço1 === endereço2
+}
+
+console.log(temEndereçoMemoriaIguais(endereço1,endereço3))
+
+--- ARQUIVO: Javascript_estudos\EX\32objPostagem.js ---
+// Obj postagem de blog
+// Eu quero que você crie neste exercicio um objeto de postagem de blog que vai conter as seguintes propriedades
+// postagens
+// titulo
+// mensagem
+// autor
+// vizualizações
+// comentarios
+//      (autor,mensagem)
+// estaAoVivo
+
+postagens = {
+    titulo: 'Javascript Aula 44 Objeto Postagem de Blog',
+    mensagem: 'Olá nesta aula estamos trabalhando com a criação de um objeto que representará um postagem em um blog, veja nesa aula exatamente como criar um objeto usando o javascript',
+    autor: 'Dev Aprender',
+    visualizações: 1.356,
+    comentarios: [
+        {autor: 'a',mensagem: 'b'},
+        {autor: 'a',mensagem: 'b'}
+    ],
+    estaAoVivo: true
+}
+console.log(postagens)
+
+--- ARQUIVO: Javascript_estudos\EX\33contrutorFunction.js ---
+// Construtor function
+
+// Criar um objeto postagem
+// titulo, mensagem, autor, vizualização, comentarios, estaaovivo
+
+function Postagem(titulo,mensagem, autor) {
+    this.titulo = titulo,
+    this.mensagem = mensagem,
+    this.autor = autor
+    this.vizualizações = 0,
+    this.comentarios = [
+        {autor: 'a',mensagem: 'b'},
+        {autor: 'a',mensagem: 'b'}
+    ],
+    
+    this.estaAoVivo = function() {
+        return true
+    }
+}
+
+const postagem1 = new Postagem("a",'b','b');
+console.log(postagem1);
+console.log(postagem1.estaAoVivo())
+
+--- ARQUIVO: Javascript_estudos\EX\34faixaDePreço.js ---
+// faixa de preço
+// é quero você crie um array de objetos de faixa de preço para que ela possa ser usado em um site igual o mercado livre
+// faixas, tooltip, minimo, maximo.
+
+
+let faixas1 = [
+    {tooltip: "ate R$700",minimo: 0, maximo:700},
+    {tooltip: "de R$700 a R$1000",minimo: 700, maximo:1000},
+    {tooltip: "de 1000 ou mais",minimo: 1000, maximo:99999},
+];
+// Factory function
+function criarFaixaPreço(tooltip,minimo, maximo) {
+    return {
+        tooltip,
+        minimo,
+        maximo
+    }
+}
+
+let faixas2 = [
+    criarFaixaPreço('a', 1, 100),
+    criarFaixaPreço('b', 100, 1000),
+    criarFaixaPreço('b', 1000, 100000)
+]
+
+// Construction function
+function faixaPreço(tooltip,minimo,maximo) {
+    this.tooltip = tooltip,
+    this.minimo = minimo,
+    this.maximo = maximo
+}
+
+
+ let faixas3 = [
+    new faixaPreço('d', 10, 20),
+    new faixaPreço('e', 20, 30),
+    new faixaPreço('f', 30, 40),
+]
+
+console.log(faixas1);
+console.log(faixas2);
+console.log(faixas3);
+
+--- ARQUIVO: Javascript_estudos\EX\README.md ---
+# Javascript_estudos
+ Esta pasta é para exercícios do curso do Jhonatan (Dev Aprender), e mais alguns.
+
+<div style="display: inline_block"><br>
+  <img align="center" height="300" width="300" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg">
+</div>
+
+--- ARQUIVO: Javascript_estudos\README.md ---
+# Javascript_estudos
+ Repositório de estudos de Javascript
+
+<div style="display: inline_block"><br>
+  <img align="center" height="300" width="300" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg">
+</div>
+

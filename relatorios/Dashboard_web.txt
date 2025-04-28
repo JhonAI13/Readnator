@@ -1,0 +1,403 @@
+
+=== DIRETÓRIO: Dashboard_web ===
+
+--- ARQUIVO: Dashboard_web\README.md ---
+# Dashboard_web
+ # Análise de Veículos com Streamlit
+
+Este projeto é uma aplicação interativa desenvolvida em Python utilizando **Streamlit** para explorar um conjunto de dados de veículos. A ferramenta permite a visualização e análise dos dados por meio de histogramas, scatter plots, estatísticas descritivas e um mapa de calor da correlação.
+
+## 📌 Funcionalidades
+- **Visualização dos Dados**: Exibição da base de dados completa.
+- **Histograma Interativo**: Permite selecionar uma coluna numérica (preço, ano, odômetro, dias) e visualizar sua distribuição.
+- **Scatter Plot Dinâmico**: Escolha interativa das variáveis para os eixos X e Y, analisando relações entre atributos numéricos.
+- **Estatísticas Descritivas**: Exibe métricas como média, desvio padrão e quartis para melhor compreensão dos dados.
+- **Mapa de Calor da Correlação**: Gera um heatmap das correlações entre variáveis numéricas com opção de download da imagem.
+
+## 📂 Estrutura do Projeto
+```
+/
+├── app.py                # Arquivo principal da aplicação Streamlit
+├── data/
+│   ├── vehicles.csv      # Base de dados utilizada na análise
+├── requirements.txt      # Dependências do projeto
+├── README.md             # Documentação do projeto
+```
+
+## 🚀 Como Executar
+### 1️⃣ Instale as dependências
+Certifique-se de que possui o Python instalado e execute:
+```bash
+pip install -r requirements.txt
+```
+
+### 2️⃣ Execute a aplicação
+```bash
+streamlit run app.py
+```
+
+Acesse no navegador:
+```
+http://localhost:8501
+```
+
+## 🔧 Dependências
+As principais bibliotecas utilizadas são:
+- **Streamlit** (interface interativa)
+- **Pandas** (manipulação de dados)
+- **NumPy** (operações matemáticas)
+- **Matplotlib** (visualização de dados)
+
+Instale todas as dependências com:
+```bash
+pip install -r requirements.txt
+```
+
+## 📌 Observações
+- Certifique-se de que o arquivo `vehicles.csv` está presente na pasta `data/`.
+- Se estiver rodando no **Render**, não defina manualmente `serverAddress` e `serverPort`, pois a plataforma configura isso automaticamente.
+
+## 📄 Licença
+Este projeto está sob a licença MIT. Sinta-se à vontade para modificar e utilizar conforme necessário.
+
+---
+Desenvolvido com ❤️ usando Python & Streamlit 🚀
+
+
+
+--- ARQUIVO: Dashboard_web\app.py ---
+import streamlit as st
+import pandas as pd, numpy as np, matplotlib.pyplot as plt
+from io import BytesIO
+
+@st.cache_data
+def load_data(path):
+    return pd.read_csv(path)
+
+# Carrega os dados e renomeia as colunas para padronizar
+file_path = "data/vehicles.csv"
+df = load_data(file_path)
+df.columns = ['price', 'year', 'model', 'condition', 'cylinders', 'fuel',
+              'odometer', 'transmission', 'body', 'color', 'extra', 'date', 'days']
+
+# Converte para numérico as colunas relevantes
+for col in ['price', 'year', 'cylinders', 'odometer', 'extra', 'days']:
+    df[col] = pd.to_numeric(df[col], errors='coerce')
+
+st.title("Análise de Veículos")
+st.write("""### Funcionalidades  
+- Visualização dos Dados  
+    Exibe o DataFrame completo com as informações dos veículos.  
+- Histograma Interativo  
+    Permite selecionar uma coluna numérica (preço, ano, odômetro, dias) e visualizar sua distribuição.  
+- Scatter Plot Dinâmico  
+    Escolha interativa das variáveis para os eixos X e Y, analisando relações entre atributos numéricos.  
+- Estatísticas Descritivas  
+    Exibe métricas como média, desvio padrão e quartis para melhor compreensão dos dados.  
+- Mapa de Calor da Correlação (com Download)  
+    Gera um heatmap das correlações entre variáveis numéricas.  
+    Possibilidade de baixar o gráfico em PNG para uso posterior.  
+---  
+""")
+# Exibição do DataFrame (opcional)
+if st.checkbox("Mostrar DataFrame"):
+    st.dataframe(df)
+
+# --- Histograma ---
+st.header("Histograma")
+# Seletor para escolher a coluna do histograma (contendo apenas colunas numéricas relevantes)
+hist_col = st.selectbox("Selecione a coluna para o histograma:", ['price', 'year', 'odometer', 'days'])
+if hist_col:
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.hist(df[hist_col].dropna(), bins=50, edgecolor="black")
+    ax.set_title(f'Histograma de {hist_col}')
+    ax.set_xlabel(hist_col)
+    ax.set_ylabel("Frequência")
+    st.pyplot(fig)
+
+# --- Scatter Plot ---
+st.header("Scatter Plot")
+# Seletores para os eixos X e Y do scatter plot (usando todas as colunas numéricas)
+num_cols = df.select_dtypes(include=np.number).columns.tolist()
+x_scatter = st.selectbox("Selecione o eixo X para o Scatter Plot:", num_cols)
+y_scatter = st.selectbox("Selecione o eixo Y para o Scatter Plot:", num_cols)
+if x_scatter and y_scatter:
+    fig, ax = plt.subplots(figsize=(8, 5))
+    dados = df.dropna(subset=[x_scatter, y_scatter])
+    ax.scatter(dados[x_scatter], dados[y_scatter], alpha=0.7)
+    ax.set_title(f'{x_scatter} vs {y_scatter}')
+    ax.set_xlabel(x_scatter)
+    ax.set_ylabel(y_scatter)
+    ax.grid(True)
+    st.pyplot(fig)
+
+# --- Estatísticas Descritivas ---
+st.header("Estatísticas Descritivas")
+if st.checkbox("Mostrar estatísticas descritivas"):
+    st.write(df.describe())
+
+# --- Mapa de Calor da Correlação com opção de Download ---
+st.header("Mapa de Calor da Correlação")
+if st.checkbox("Mostrar mapa de calor da correlação (download)"):
+    num_df = df.select_dtypes(include=np.number).dropna()
+    if not num_df.empty:
+        corr = num_df.corr()
+        fig, ax = plt.subplots()
+        cax = ax.imshow(corr, cmap="coolwarm", vmin=-1, vmax=1)
+        fig.colorbar(cax)
+        ax.set_xticks(range(len(corr.columns)))
+        ax.set_yticks(range(len(corr.index)))
+        ax.set_xticklabels(corr.columns, rotation=45, ha="left")
+        ax.set_yticklabels(corr.index)
+        for i in range(len(corr)):
+            for j in range(len(corr)):
+                ax.text(j, i, f"{corr.iloc[i, j]:.2f}", ha="center", va="center", color="black")
+        st.pyplot(fig)
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        st.download_button("Download mapa de calor", data=buf.getvalue(),
+                           file_name="heatmap.png", mime="image/png")
+    else:
+        st.write("Dados numéricos insuficientes para gerar o mapa de calor.")
+st.write("[Repositório](https://github.com/JhonAI13/Dashboard_web)")
+
+
+=== DIRETÓRIO: Dashboard_web\data ===
+
+
+=== DIRETÓRIO: Dashboard_web\notebook ===
+
+--- ARQUIVO: Dashboard_web\notebook\EDA.ipynb (sem output) ---
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "import ipywidgets as widgets\n",
+        "\n",
+        "df = pd.read_csv(r\"C:\\Users\\jonat\\Documents\\GitHub\\Dashboard_web\\data\\vehicles.csv\")"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "df"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**price:** Valor pelo qual o veículo está sendo anunciado. Geralmente representa o preço em dólares ou na moeda local.\n",
+        "\n",
+        "**model_year:** Ano de fabricação ou modelo do veículo. Por exemplo, “2011.0” indica que o veículo é do ano 2011.\n",
+        "\n",
+        "**model:** Modelo e, em muitos casos, também a marca do veículo. Exemplo: “bmw x5” ou “ford f-150”.\n",
+        "\n",
+        "**condition:** Estado ou condição do veículo. Os valores podem variar de “excellent” (excelente), “like new” (como novo), “good” (bom), “fair” (razoável) até “salvage” (acidentado ou com problemas).\n",
+        "\n",
+        "**cylinders:** Número de cilindros do motor do veículo. Esse número pode dar uma ideia da potência e do tipo de motor.\n",
+        "\n",
+        "**fuel:** Tipo de combustível utilizado pelo veículo, como “gas” (gasolina) ou outros combustíveis que possam aparecer (diesel, elétrico, etc).\n",
+        "\n",
+        "**odometer:** Quilometragem ou milhagem do veículo. Esse valor indica quantos quilômetros ou milhas o veículo percorreu.\n",
+        "\n",
+        "**transmission:** Tipo de transmissão do veículo. Por exemplo, “automatic” (automático) ou “manual”.\n",
+        "\n",
+        "**type:** Tipo de veículo, como “SUV”, “sedan”, “pickup”, entre outros. Essa coluna ajuda a identificar a categoria ou formato do veículo.\n",
+        "\n",
+        "**paint_color:** Cor da pintura do veículo. Pode conter valores como “black”, “white”, “red”, etc. Em alguns casos, pode estar ausente (NaN).\n",
+        "\n",
+        "**is_4wd:** Indicador de se o veículo possui tração nas quatro rodas (four-wheel drive). Normalmente, valores como 1 podem indicar que possui, enquanto NaN ou 0 indicam o contrário.\n",
+        "\n",
+        "**date_posted:** Data em que o anúncio foi publicado. Por exemplo, “2018-06-23” indica que o veículo foi anunciado nesta data.\n",
+        "\n",
+        "**days_listed:** Número de dias que o anúncio ficou ativo. Essa informação pode ajudar a entender quanto tempo o veículo permaneceu no mercado."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "# Seleciona automaticamente as colunas numéricas do DataFrame\n",
+        "num_columns = ['price', 'model_year', 'odometer', 'days_listed']\n",
+        "\n",
+        "def update_histograma(coluna):\n",
+        "    plt.figure(figsize=(8, 5))\n",
+        "    # Remove valores ausentes para evitar problemas no dftograma\n",
+        "    dados = df[coluna].dropna()\n",
+        "    plt.hist(dados, bins=100, edgecolor='black')\n",
+        "    plt.xlabel(coluna)\n",
+        "    plt.ylabel('Frequência')\n",
+        "    plt.title(f'dftograma da coluna \"{coluna}\"')\n",
+        "    plt.show()\n",
+        "\n",
+        "# Cria um Dropdown com as colunas numéricas\n",
+        "dropdown = widgets.Dropdown(\n",
+        "    options=num_columns,\n",
+        "    value=num_columns[0],\n",
+        "    description='Coluna:'\n",
+        ")\n",
+        "\n",
+        "# Cria o widget interativo\n",
+        "widgets.interact(update_histograma, coluna=dropdown)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "df.columns = ['price', 'year', 'model', 'condition', 'cylinders', 'fuel', \n",
+        "              'odometer', 'transmission', 'body', 'color', 'extra', 'date', 'days']\n",
+        "\n",
+        "# Converte as colunas numéricas para o tipo adequado\n",
+        "numeric_cols = ['price', 'year', 'cylinders', 'odometer', 'extra', 'days']\n",
+        "for col in numeric_cols:\n",
+        "    df[col] = pd.to_numeric(df[col], errors='coerce')\n",
+        "\n",
+        "# Obtém as colunas numéricas do DataFrame\n",
+        "num_columns = df.select_dtypes(include=[np.number]).columns.tolist()\n",
+        "\n",
+        "# Função que atualiza o scatter plot para as colunas selecionadas\n",
+        "def update_scatter(x_col, y_col):\n",
+        "    plt.figure(figsize=(8, 5))\n",
+        "    # Filtra os dados removendo as linhas que possuem valores ausentes nas colunas selecionadas\n",
+        "    data = df.dropna(subset=[x_col, y_col])\n",
+        "    plt.scatter(data[x_col], data[y_col], alpha=0.7)\n",
+        "    plt.xlabel(x_col)\n",
+        "    plt.ylabel(y_col)\n",
+        "    plt.title(f'Scatter Plot: {x_col} vs {y_col}')\n",
+        "    plt.grid(True)\n",
+        "    plt.show()\n",
+        "\n",
+        "# Cria dois Dropdowns para escolher as colunas dos eixos X e Y\n",
+        "dropdown_x = widgets.Dropdown(\n",
+        "    options=num_columns,\n",
+        "    value=num_columns[0],\n",
+        "    description='Eixo X:'\n",
+        ")\n",
+        "\n",
+        "dropdown_y = widgets.Dropdown(\n",
+        "    options=num_columns,\n",
+        "    value=num_columns[1] if len(num_columns) > 1 else num_columns[0],\n",
+        "    description='Eixo Y:'\n",
+        ")\n",
+        "\n",
+        "# Cria o widget interativo para o scatter plot\n",
+        "widgets.interact(update_scatter, x_col=dropdown_x, y_col=dropdown_y)"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": ".venv",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.12.5"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 2
+}
+
+--- ARQUIVO: Dashboard_web\requirements.txt ---
+pandas
+plotly-express
+streamlit
+nbformat
+matplotlib
+ipywidgets
+
+# Erros Comuns em Data Analysis
+
+KeyError
+- **Ocorre quando**: Tentativa de acesso a chave/coluna inexistente
+- **Exemplo**: `df['coluna_inexistente']`
+- **Solução**: Verificar `df.columns` ou usar `df.get('coluna')`
+
+ValueError
+- **Ocorre quando**: Formato ou valor inadequado
+- **Exemplo**: `pd.to_numeric('texto')` ou `np.array([1, 'texto'])`
+- **Solução**: Validar dados antes das operações
+
+TypeError
+- **Ocorre quando**: Operação com tipo incorreto
+- **Exemplo**: `df['coluna'] + 'texto'` (soma numérico + string)
+- **Solução**: Converter tipos com `astype()` ou `pd.to_numeric()`
+
+IndexError
+- **Ocorre quando**: Acesso a índice fora do range
+- **Exemplo**: `array[100]` em array com 10 elementos
+- **Solução**: Verificar `len()` antes de acessar índices
+
+AttributeError
+- **Ocorre quando**: Acesso a método/atributo inexistente
+- **Exemplo**: `df.meanz()` em vez de `df.mean()`
+- **Solução**: Verificar documentação da biblioteca
+
+MemoryError
+- **Ocorre quando**: Esgotamento de memória
+- **Exemplo**: Carregar arquivo maior que a RAM disponível
+- **Solução**: Usar `chunksize` ou processamento incremental
+
+SettingWithCopyWarning
+- **Ocorre quando**: Modificação em cópia de DataFrame
+- **Exemplo**: `df_view = df[df.col > 0]; df_view['nova'] = 1`
+- **Solução**: Usar `.copy()` ou loc para modificações
+
+LinAlgError (NumPy)
+- **Ocorre quando**: Operação matricial inválida
+- **Exemplo**: Inversa de matriz singular
+- **Solução**: Verificar determinante ou usar pseudoinversa
+
+MissingDataError (Pandas)
+- **Ocorre quando**: Operações com NaN
+- **Exemplo**: `df.dropna()` com parâmetros incorretos
+- **Solução**: Usar `fillna()` ou tratamento adequado
+
+ DtypeWarning
+- **Ocorre quando**: Mistura de tipos em colunas
+- **Exemplo**: Carregar CSV com colunas heterogêneas
+- **Solução**: Especificar `dtype` no carregamento
+
+os Específicos de Machine Learning
+- `NotFittedError`: Modelo não treinado antes de prever
+- `ConvergenceWarning`: Algoritmo não convergiu
+- `DataDimensionalityWarning`: Dimensões incompatíveis
+
+s Práticas para Evitar Erros
+1. Sempre verificar `shape` e `dtypes` dos dados
+2. Usar `try-except` em operações críticas
+3. Validar dados com `assert` statements
+4. Utilizar `df.info()` e `df.describe()` regularmente
+5. Fazer amostragem em grandes datasets
+
+ks Relacionados
+- [[Manipulação de Dados]]
+- [[Tratamento de Missing Values]]
+- [[Otimização de Memória]]
+

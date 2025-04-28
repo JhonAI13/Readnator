@@ -1,0 +1,599 @@
+
+=== DIRETÓRIO: HTML_CSS_estudos ===
+
+
+=== DIRETÓRIO: HTML_CSS_estudos\Cadernos ===
+
+--- ARQUIVO: HTML_CSS_estudos\Cadernos\Caderno.md ---
+# HTML_CSS_estudos
+ Repositório para curso do Guanabara
+### C01A02
+Links importantes:
+
+ * [Repositorio do Guanabara](https://github.com/gustavoguanabara/html-css)
+ * [Site](https://gustavoguanabara.github.io/)
+
+### C01A03
+
+Bibliografia recomendada:
+
+1. [W3C Standards](https://www.w3.org/standards/webdesign/)
+2. [WHATWG Living Standard](https://html.spec.whatwg.org)
+3. [W3Schools](https://www.w3schools.com)
+
+### C01A04
+
+A **Intenet** veio da ARPANET, que era para militares.
+(Neste site)[https://www.submarinecablemap.com/] mostra quantos cabos subimarinos estão em operação atualmente.
+
+### C02A01
+ * Codigo Multibyte UTF-8(para letras)
+ * 2**10 = 1024
+ * De quadrada > cenoidal = modulação
+   
+   De cenoidal > quadrada = demodulação
+   
+   MOdulação + DEModulaçao = modem
+ * Para descobrir seu ip, basta entrar [neste site](https://www.iplocation.net/), e no mesmo encontra o ip do servidor de outros sites.
+### C03A01
+ * HTML = HyperText Markup Language = Linguagem de marcação hipertexto
+   * Focada em conteudo(textos, imagens, vídeos, tabelas)
+ * CSS = Cascading Style Sheets = Folhas de estilo em cascata
+   * Focada em design(Cores, sombras, tamanhos, posicionamento)
+ * JS interatividade(menus, animações, popups, validações)
+Conteudo em HTML
+<img width="613" alt="image" src="https://user-images.githubusercontent.com/84166332/151681226-158d2d37-430f-4781-a98c-aa501e6f18cf.png">
+Estilos em CSS
+<img width="338" alt="image" src="https://user-images.githubusercontent.com/84166332/151681268-7702826c-8f88-4578-9e4b-91f895ca2a23.png">
+Estrutura basica de documentos HTML
+<img width="603" alt="image" src="https://user-images.githubusercontent.com/84166332/151681385-bde8346d-9cd3-4cc3-9654-368291df3faa.png">
+
+### C03A02
+
+ * Front-end = client-side
+ * Back-end = server-side
+
+### C04A02
+
+<img width="229" alt="image" src="https://user-images.githubusercontent.com/84166332/151683243-53e36f15-1349-4157-b283-3e9e3d654b22.png">
+
+### C05A01
+
+Para quebrar linha basta utilizar o `<br>` no meio da fraze.
+
+Sinal de < e > são feitos assim `&lt;` e `&gt;`
+
+### C05A02
+
+Para colocar emoges basta colocar entra no site [emojipedia](https://emojipedia.org/people/):
+
+![Animação](https://user-images.githubusercontent.com/84166332/152274229-d01d0079-950e-41b6-90bc-1c2597b91933.gif)
+
+### C06A01
+
+Sites que so tem imagens de domínio público: 
+ * [UnSplash](https://unsplash.com/) 
+ * [Pexels](https://www.pexels.com/pt-br/) 
+ * [Freepik](https://www.freepik.es/) 
+ * [Rawpixel](https://www.rawpixel.com/) 
+ * [Pixabay](https://pixabay.com/pt/) 
+ * [Libreshot](https://libreshot.com/) 
+ * [Wikimedia Commons](https://commons.wikimedia.org/wiki/Commons:Featured_pictures?uselang=pt-br) 
+ * [Google images](https://www.google.com/search?q=imagens&tbm=isch&hl=pt-br&tbs=il:cl&sa=X&ved=0CAAQ1vwEahcKEwjQrrWrw-T1AhUAAAAAHQAAAAAQAg&biw=1079&bih=534) E também no google imagens o __*Licenças Creative Commons*__ ativado.
+> Alguns desses sites que disponibilizam imagens de domínio
+público possuem propagandas de serviços de venda de imagens e acabam te
+confundindo um pouco.
+
+### C06A02
+
+Tipos de imagens:
+
+tipos | compactado | transparencia | animação
+:---: | ---: | :---: | :---:
+JPEG | com perdas | não | não
+GIF | poucas perdas | sim | sim
+PNG | poucas perdas | sim | sim
+
+### C06A05
+
+Sites utilizados na  aula:
+ * [favicon.cc](https://www.favicon.cc/)Para fazer icones
+ * [iconarchive](https://iconarchive.com/)Para encontrar icones]
+ * [favicon.io](https://favicon.io/)Para transformar imagens em icones
+
+### C07A01
+
+H1 não é letra grande, e titulo de nivel 1.
+
+### C08A01
+
+Para ver as tags obsoletas basta ver [este site](https://dev.w3.org/html5/pf-summary/obsolete.html)
+
+### C08A02
+
+Seleciona > CTR + SHIFT + P > Enter > digite a marcação.
+
+![Comando](https://user-images.githubusercontent.com/84166332/152878879-5b5f83f3-58d8-4bca-afbb-810beec7b138.gif)
+
+### C09A02
+
+Para selecionar varias marcações para edição:
+
+![selecionar com alt](https://user-images.githubusercontent.com/84166332/153084108-db1e0772-91cd-4fd4-925e-f804ab4e1734.gif)
+ 
+### C10A01
+
+Para abrir links em outra aba basta colocar este codigo apos a abertura da href `target="_blank" rel="external`
+
+### C10A03
+
+Para ver o type correto para download de links, basta entrar no [iana.org](https://www.iana.org/assignments/media-types/media-types.xhtml)
+
+### C11A02
+
+Para colocar imagens adapitativas ao tamanho, usando apenas o HTML5 basta:
+``` 
+<picture>
+    <source media="(max-width: 750px)" srcset="Imagem grande" type="image/png">
+    <source media="(max-width: 1000px)" srcset="Imagem media" type="image/png">
+    <img src="Imagem principal" alt="Imagem flexível">
+</picture>
+```
+
+### C11A03
+
+Para conseguir musicas gratis no [Youtube](https://studio.youtube.com/channel/UC1lZeLG7SLx9y5fw8wz24hQ/music).
+
+Uma das formas de colocar audios no HTML5 é:
+```
+    <audio src="audio.mp3"controls autoplay></audio>
+  ```
+
+### C11A04
+
+Para diminuir arquivos basta usar o programa [handbreak](https://handbrake.fr/)
+
+### C11A06
+
+[Vimeo](https://vimeo.com/) Para vídeos autorais.
+
+### C11A07
+
+Site para pegar [Thumbnails](https://ferramentas.seletronic.com.br/miniaturas-youtube/)
+
+### C12A03
+
+ * É possível colocar mais de 1 arquivo CSS dentro do `link:css`
+ * A prioridade dos Estilos são respectivamente: 
+   * Inline (Tem maior excalabilidade)
+     * Locais / Internos (Pequenos extilos)
+       * Externos (Evite)
+
+### C13A02
+
+Existe 3 formas de representação de cores e estas são:
+
+  * Pelo nome da cor 
+  * Por Hexadecimal
+  * Por códigos RGB
+  * por HSL ((Hue, Sturation, Luminosity)Tom, Saturação, Luminozidade)
+  
+### C13A04
+
+Site da [adobe](https://color.adobe.com/pt/create/color-wheel) e [Paletton](https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF) para escolha de cores para desiner. 
+
+E para pesquisar imagens baseado na cor [Tineye](http://labs.tineye.com/multicolr/)
+
+E para algo mais inicial use o [Coolors](https://coolors.co/fffbfc-62bbc1-ec058e-0f0326-3a606e)
+
+### C13A05
+
+Para conseguir as cores de sites usar a extenção [ColorZilla](https://chrome.google.com/webstore/detail/colorzilla/bhlhnicpbhignbdhedgjhgdocnmhomnp/related?utm_source=chrome-ntp-icon)
+  * Pelo nome da cor                                
+![image](https://user-images.githubusercontent.com/84166332/158719118-5a7764fc-305c-4adb-bb59-5ea9774a6563.png)
+
+  * Por Hexadecimal                                        
+![image](https://user-images.githubusercontent.com/84166332/158718943-509cf619-a0c6-4c01-8fac-45de4441a126.png)
+
+  * Por códigos RGB                                        
+![image](https://user-images.githubusercontent.com/84166332/158719001-121d0e3f-7675-497d-8576-1d98a5d92322.png)
+
+  * por HSL ((Hue, Sturation, Luminosity)Tom, Saturação, Luminozidade) 
+![image](https://user-images.githubusercontent.com/84166332/158719050-ac8cf7ac-877f-49ab-892f-0db1086f68cd.png)
+
+Resultado:![image](https://user-images.githubusercontent.com/84166332/158719359-4b0e3ee3-38e6-47a2-81c7-40202de313a6.png)
+
+#### Mecherndo na opacidade:
+![Mecher na opacidade ](https://user-images.githubusercontent.com/84166332/158719959-e95e5dc8-5b8d-4f8e-9273-e27e640e3585.gif)
+
+### C14A02
+
+itens metricos de a anatomia de tipos:
+
+![image](https://user-images.githubusercontent.com/84166332/159139602-d42f393c-5477-434a-873f-3ce2552a46bd.png)
+ 
+Itens anatomicos:
+
+![image](https://user-images.githubusercontent.com/84166332/159139702-e0842adc-5aa3-4fbd-b6c2-d350553e8230.png)
+
+ * Letras = Glifos 
+ * Todos as letras = fonte
+ * Familias tipograficas = varias letras diferentes da original da mesma fonte(normalmente mais grossas).
+   * ![image](https://user-images.githubusercontent.com/84166332/159140094-d75f09db-53b1-41dd-8d7e-094ee665b72d.png)
+
+### C14A03
+
+Para achar as [combinações de fontes ](http://www.w3bai.com/en-US/cssref/css_websafe_fonts.html), chamadas de safes combinations.
+
+### C14A04
+
+Não confundir com: wight(peso) width(largura) heitght(autura)
+Ordem para o shorthand = - font-style -> font-weight -> font-size -> font-family.
+
+### C14A06
+
+Para achar fonts use o [Google fonts](https://fonts.google.com/)
+
+### C14A07
+
+Para encontrar fontes mais diferentes [dafont](https://www.dafont.com/pt/)
+
+### C14A08
+
+Para encontrar fonts em sites css usar a extenção [Fonts Ninja](https://chrome.google.com/webstore/detail/fonts-ninja/eljapbgkmlngdpckoiiibecpemleclhh?utm_source=chrome-ntp-icon)
+
+### C14A09
+
+Para encontrar fonts em imagens use os sites : [Whatfontis](https://www.whatfontis.com/), [fontsquirrel](https://www.fontsquirrel.com/), 
+[myfonts](https://www.myfonts.com/).
+
+### C15A04
+
+Site para [tabelas de Símbolos Especiais](https://erikasarti.com/html/dingbats-simbolos-desenhos/)
+
+### C16A01
+caixa:
+ * heigh   = altura 
+ * width   = largura
+ * border  = borda
+ * padding = preenchimento(expaço interno)
+ * margin  = margem(expaço por fora) 
+ * outline = tracejado(borda fora da caixa)
+
+Tipos de caixa:
+ * box-level `displey: block`
+    * `<div>`
+    * `<h1>-<h6>`
+    * `<p>`
+    * `<main>`
+    * `<header>`
+    * `<nav>`
+    * `<article>`
+    * `<aside>`
+    * `<footer>`
+    * `<form>`
+    * `<video>`
+ * inline-level `display: inline`
+    * `<span>`
+    * `<a>`
+    * `<code>`
+    * `<small>`
+    * `<strong>`
+    * `<em>`
+    * `<sup>-<sub>`
+    * `<label>`
+    * `<botton>`
+    * `<input>`
+    * `<select>`
+
+### C16A02
+
+Sempre é o navegador quando : *user agent*
+
+### C16A03
+
+O `auto` para centrazilar
+
+### C17A03
+
+para criar mocks de site : [Wireframe](https://wireframepro.mockflow.com/)
+
+### C17A06
+
+Para saber o tamanho da tela no navegador :
+
+![saber o tamanho exato da tela](https://user-images.githubusercontent.com/84166332/160297493-10efffc6-a72f-4fd2-ad0d-1f4b0f88cb1a.gif)
+
+### C18A06
+
+Para gerar o Qr code de um link qualquer, entre no site [QR Code Generator](https://br.qr-code-generator.com/)
+
+### C19A03
+
+Para colocar uma imagem basta colocar uma `url()` no `bacgraund-image:`.
+
+Para o `background-repeat:` pode se usar: `repeat` `repeat-x` `repeat-y` `no-repeat`
+
+### C21A05
+
+th é o titulo
+td é o dado
+
+### Margin collapse
+
+![image](https://user-images.githubusercontent.com/84166332/222004350-bf66fe2c-0108-4457-9f2b-9dbb85c76b70.png)
+
+### Posicionamento
+
+![image](https://user-images.githubusercontent.com/84166332/222596713-a5b66eaf-8402-4b68-9574-b540c6091d8b.png)
+
+
+### inline-block
+
+![image](https://user-images.githubusercontent.com/84166332/222590170-8e192835-7a5f-4ec7-8314-df661b0c3bee.png)
+
+### position
+
+![image](https://user-images.githubusercontent.com/84166332/222860185-fb09709f-6cd8-4233-85dd-3ffeae78ae7f.png)
+
+### Seletore 
+
+![image](https://user-images.githubusercontent.com/84166332/223002317-6ba421ea-87c3-480f-a029-947363222e07.png)
+
+### line height
+
+![image](https://user-images.githubusercontent.com/84166332/223309724-7f27fe6b-94e7-4245-b4c2-68fe1889ce14.png)
+
+
+
+
+
+--- ARQUIVO: HTML_CSS_estudos\Cadernos\Marcações HTML.md ---
+# HTML_CSS_estudos
+ Repositório para curso do Guanabara
+ Todos as marcações ensinadas
+***
+## Marcações
+
+### Esboço do documento
+Marcação | Explicação
+:---: | :---  
+`<!DOCTYPE>` | Verção do (X)HTML 
+`<html />` | Documento HTML 
+`<head />` | Parte de informação 
+`<body />` | Parte de contexto
+
+### Comentario
+Marcação | Explicação
+:---: | :--- 
+`<!-- -->` | Texto em comentário 
+`/* */` | Texto comentado em qualquer lugar
+
+### `<head />`
+Marcação | Explicação
+:---: | :--- 
+`<base />` | URL base 
+`<meta />` | Meta dados 
+`<title />` | Titulo 
+`<link />` | Recurso relevante
+`<style />` | Recurso de estilo 
+`<script />` | Recurso de escrita 
+
+
+## `<body />`
+Marcação | Explicação
+:--- | :---  
+`<h1 /> - <h6 />` | Titulos de nives(1 a 6)
+`<p />` | Paragrafo 
+`<hr />` | Linha 
+`<img />` | Para colocar imagens 
+`<address />` | Para endereços
+`<b />` | Negrito 
+`<strong />` | Negrito semântico
+`<i />` | Italico 
+`<em />` | Termo em destaque semântico
+`<mark />` | Marcação(marca texto) 
+`<small />` | Letra pequena
+`<del />` | Linha no meio do texto
+`<ins />` | Inserido posterior
+`<u />` | Sublinhado
+`<sub />` | Subiscrito
+`<sup />` | Elevado 
+`<code />` | Comandos 
+`<pre />` | Representar texto 
+`<q />` | Citações entre aspas 
+`<blockquote />` | Citações completas 
+`<abbr />` | Abreviações 
+`<bdo />` | Direção do texto 
+`<ol />` | Lista ordenadas 
+`<ul />` | Lista não ordenada
+`<li />` | Item de uma lista 
+`<dl />` | Lista descritiva
+`<dt />` | Item a ser explicado 
+`<dd />` | explicação do item
+`<picture />` | container para img
+`<audio />` | container para audio
+`<video />` | container para video
+`<source />` | varios formatos 
+`<iframe />` | video de streaming
+`<main />` | Conteudo principal.
+`<div />` | Container generico
+`< />` | explicação  
+
+## `<style />`
+Elemento  | Explicação
+---: | :---  
+`color:` | Cor do texto 
+`text-aling:` | Alinhamento do texto
+`text-shadow:` | Sombra no texto
+`text-decoration:` | Sublinhado
+`text-indent:` | Identação
+`font:` | Tudo da fonte
+`font-style:` | Italico
+`font-weight:` |  Negrito
+`font-size:` | Tamanho da fonte
+`font-family:` | Familia da fonte 
+`backgraund-image:` | Para colocar imagens no fundo 
+`backgraund-color:` | Cor do fundo 
+`background-attachment:` | Img rola junto com a pagina 
+`border-radius:` | Bordas arredondadas
+`box-shadow:` | Sombra da caixa
+`height:` | Altura
+`width:` | Largura
+`padding:` | Distancia entre o conteudo e a borda
+`margin:` | Quadro da caixa
+`@import` | Para importar outras fontes
+`@font-face` | Tipo de letra
+`scr:` | expecifica o local onde esta as fontes
+`display:` | tipo da caixa
+`border:` | borda
+`border-width:` | Largura da borda 
+`border-style:` | Estilo da borda
+`border-color:` | cor da borda
+`padding:` | Expaço entre a borda e o conteudo
+`padding-top:` | Tamanho do topo
+`padding-right:` | Tamanho da direita
+`padding-bottom:` | Tamanho de baixo
+`padding-left:` | Tamanho de esquerda
+`margin:` | Margem
+`margin-top:` | Tamanho do topo
+`margin-right:` | Tamanho da direita 
+`margin-bottom:` | Tamanho de baixo
+`margin-left:` | Tamanho de esquerda 
+`outline:` | Fora da caixa 
+`outline-width:` | Tamanho de fora da caixa
+`outline-style:` | Extilo de fora da caixa
+`outline-color:` | cor de fora da caixa 
+`:` | explicação
+`:` | explicação
+`:` | explicação 
+`:` | explicação
+
+
+
+## Seletor
+Seletor | Explicação
+:---: | :---  
+`:hover` | Quando passar o mouse 
+`:` | explicação
+`:` | explicação 
+`:` | explicação
+
+
+
+--- ARQUIVO: HTML_CSS_estudos\Cadernos\README.md ---
+# HTML_CSS_estudos
+Pasta com os cadernos que inventei para anotações.
+
+<div style="display: inline_block"><br>
+  <img align="center" height="300" width="300" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg">
+  <img align="center" height="300" width="300" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg">
+</div>
+
+
+
+=== DIRETÓRIO: HTML_CSS_estudos\Curso em video ===
+
+
+=== DIRETÓRIO: HTML_CSS_estudos\Curso em video\Desafios ===
+
+
+=== DIRETÓRIO: HTML_CSS_estudos\Curso em video\Desafios\DZ 1 ===
+
+--- ARQUIVO: HTML_CSS_estudos\Curso em video\Desafios\DZ 1\index.html ---
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio das Mensagens</title>
+</head>
+<body>
+    <h1>Desafio das Mensagens</h1>
+    <p>
+        *Um <br>
+        **Dois <br>
+        ***Três <br>
+        ****Quatro 
+    </p>
+    <p>
+        ****Quatro <br>
+        ***Três <br>
+        **Dois <br>
+        *Um 
+    </p>    
+</body>
+</html>
+
+
+=== DIRETÓRIO: HTML_CSS_estudos\Curso em video\Desafios\DZ 10 ===
+
+
+=== DIRETÓRIO: HTML_CSS_estudos\Curso em video\Desafios\DZ 10\Eu_fiz ===
+
+--- ARQUIVO: HTML_CSS_estudos\Curso em video\Desafios\DZ 10\Eu_fiz\android-site.txt ---
+Curiosidades de Tecnologia
+
+Tudo aquilo que você sempre quis saber sobre o mundo Tech, em um único lugar
+
+[MENU]
+Home
+Notícias
+Curiosidades
+Fale Conosco
+
+História do Mascote do Android
+
+Provavelmente você sabe que o sistema operacional Android, mantido pelo Google é um dos mais utilizados para dispositivos móveis em todo o mundo. Mas tavez você não saiba que o seu simpático mascote tem um nome e uma história muito curiosa? Pois acompanhe esse artigo para aprender muita coisa sobre esse robozinho.
+
+A primeira versão
+
+A primeira tentativa de criar um mascote surgiu em 2007 e veio de um desenvolvedor chamado Dan Morrill. Ele conta que abriu o Inkscape (software livre para vetorização de imagens) e criou sua própria versão de robô. O objetivo era apenas personificar o sistema apenas para a a sua equipe, não existia nenhuma solicitação da empresa para a criação de um mascote.
+
+[FOTO]
+
+Essa primeira versão bizarra até foi batizada em homenagem ao seu criador: seriam os Dandroids.
+
+Surge um novo mascote
+
+A ideia de ter um mascote foi amadurecendo e a missão foi passada para uma profissional da área. A ilustradora Russa Irina Blok, também funcionária do Google, ficou com a missão de representar o pequeno robô de uma maneira mais agradável.
+
+[FOTO]
+
+A ideia principal da Irina era representar tudo graficamente com poucos traços e de forma mais chapada. O desenho também deveria gerar identificação rápida com quem o olha. Surgiu então o Bugdroid, o novo mascote do Android.
+
+[FOTO]
+
+A principal inspiração para os traços do novo Bugdroid veio daqueles bonequinhos que ilustram portas de banheiro para indicar o gênero de cada porta. Conta a lenda que a artista estava criando em sua mesa no escritório do Google e olhou para o lado dos banheiros e a identificação foi imediata: simples, limpo, objetivo.
+
+[VIDEO]
+ 
+[EXTRA] Quer aprender mais? 
+
+Outro assunto curioso em relação ao Android é que cada versão sempre foi nomeada em homenagem a um doce, em ordem alfabética a partir da versão 1.5 até a 9.0.
+
+1.5 - Cupcake
+1.6 - Donut
+3.0 - Eclair
+2.2 - Froyo
+2.3 - Gingerbread
+3.0 - Honeycomb
+4.0 - Ice Cream Sandwich
+4.1 - Jelly Bean
+4.4 - KitKat
+5.0 - Lolipop
+6.0 - Marshmallow
+7.0 - Nougat
+8.0 - Oreo
+9.0 - Pie
+
+Infelizmente, o Android Q não existiu, pois o Google resolveu pôr fim a essa divertida prática e começou a usar numerações, o que deu origem ao Android 10.
+
+Acesse aqui o site Android History para conhecer a sequência das versões "adocicadas" e o que cada uma trouxe para o sistema Android.
+[/EXTRA]
+
+Então é isso! Espero que você tenha gostado do nosso artigo com essa curiosidade sobre o sistema Android e seu simpático mascote.
+         
+Site criado por Gustavo Guanabara para o CursoemVideo.
+

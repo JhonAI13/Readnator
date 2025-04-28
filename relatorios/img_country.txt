@@ -1,0 +1,627 @@
+
+=== DIRETÓRIO: img_country ===
+
+--- ARQUIVO: img_country\Md_to_DOCX.py ---
+import re
+from docx import Document
+# Texto original (você pode carregar de um arquivo ou definir como string)
+texto = """
+I’m **anxious** for the concert.  
+Estou **ansioso** pelo show.
+
+She felt **ashamed** of her mistake.  
+Ela se sentiu **constrangida** pelo erro.
+
+He’s **confident** about the presentation.  
+Ele está **confiante** na apresentação.
+
+I’m **disgusted** by that odor.  
+Estou **enojado** com aquele cheiro.
+
+We’re **excited** for the weekend.  
+Estamos **empolgados** para o fim de semana.
+
+I was **envious** of her painting.  
+Fiquei **invejoso** da pintura dela.
+
+He looks **guilty** after lying.  
+Ele parece **culpado** depois da mentira.
+
+She gets **homesick** on Fridays.  
+Ela fica **saudosa** às sextas.
+
+He felt **humiliated** on stage.  
+Ele se sentiu **humilhado** no palco.
+
+His words really **hurt** me.  
+Suas palavras realmente me **magoaram**.
+
+I’m **impatient** to begin.  
+Estou **impaciente** para começar.
+
+They’re **in love** already.  
+Eles estão **apaixonados** já.
+
+She’s **in pain** again.  
+Ela está **com dor** de novo.
+
+He’s **jealous** of my success.  
+Ele está **ciumento** do meu sucesso.
+
+I feel **lonely** at parties.  
+Eu me sinto **solitário** nas festas.
+
+She was **overjoyed** to hear it.  
+Ela ficou **superfeliz** ao ouvir.
+
+We’re **proud** of our victory.  
+Estamos **orgulhosos** da nossa vitória.
+
+I’m **relieved** it’s finished.  
+Estou **aliviado** por estar terminado.
+
+They seem **satisfied** with results.  
+Eles parecem **satisfeitos** com os resultados.
+
+I’m **scared** of the dark.  
+Tenho **medo** do escuro. _(obs.: “scared” = “assustado”)_
+
+We were **shocked** by the news.  
+Ficamos **chocados** com a notícia.
+
+He’s **sleepy** after lunch.  
+Ele está **sonolento** após o almoço.
+
+I’m **starving** for some pizza.  
+Estou **faminto** por uma pizza.
+
+She was **surprised** to see him.  
+Ela ficou **surpresa** ao vê-lo.
+
+The air felt **tense** suddenly.  
+O ar ficou **tenso** de repente.
+
+He’s **terrified** of spiders.  
+Ele está **aterrorizado** por aranhas.
+
+I’m **tired** but happy.  
+Estou **cansado** mas feliz.
+
+He felt **uncomfortable** in suit.  
+Ele se sentiu **desconfortável** no terno.
+
+She’s **upset** about the grade.  
+Ela está **chateada** com a nota.
+
+I’m **worried** about tomorrow.  
+Estou **preocupado** com amanhã.
+
+She watched in **amazement**.  
+Ela observou com **espanto**.
+
+**Boredom** crept into class.  
+O **tédio** invadiu a aula.
+
+I cherish this **calmness**.  
+Eu valorizo esta **calma**.
+
+His **coldness** surprised me.  
+A **frieza** dele me surpreendeu.
+
+Show **compassion** to strangers.  
+Mostre **compaixão** aos estranhos.
+
+I stared in **confusion**.  
+Eu olhei com **confusão**.
+
+It took real **courage**.  
+Foi preciso **coragem** de verdade.
+
+She showed fierce **determination**.  
+Ela mostrou **determinação** feroz.
+
+**Hunger** drove him to cook.  
+A **fome** o levou a cozinhar.
+
+Their **joy** was infectious.  
+A **alegria** deles era contagiante.
+
+A small act of **kindness** heals.  
+Um pequeno ato de **bondade** cura.
+
+His **laziness** cost him dearly.  
+A **preguiça** dele lhe custou caro.
+
+**Loneliness** hit at midnight.  
+A **solidão** bateu à meia-noite.
+
+She smiled in **optimism**.  
+Ela sorriu com **otimismo**.
+
+He nodded in **satisfaction**.  
+Ele assentiu com **satisfação**.
+
+Her **sickness** kept her home.  
+A **doença** dela a manteve em casa.
+
+**Thirst** made him pause.  
+A **sede** o fez parar.
+
+His **triumph** felt unreal.  
+Seu **triunfo** pareceu irreal.
+"""
+
+def extract_phrases(text):
+    """
+    Extrai blocos de frase separados por linhas em branco e o termo em negrito em inglês.
+    Retorna uma lista de dicionários com "key" e "block".
+    """
+    phrases = []
+    # Separa em blocos pelo duplo newline
+    blocks = [b.strip() for b in text.strip().split('\n\n') if b.strip()]
+    for block in blocks:
+        m = re.search(r"\*\*(.*?)\*\*", block)
+        if m:
+            key = m.group(1)
+            phrases.append({'key': key, 'block': block})
+    return phrases
+
+
+def sort_phrases(phrases):
+    """Ordena a lista de frases pelo termo em negrito (key) em ordem alfabética."""
+    return sorted(phrases, key=lambda x: x['key'].lower())
+
+
+def build_document(sorted_phrases, filename="texto_formatado.docx"):
+    """Gera um arquivo .docx com o conteúdo ordenado, adicionando espaçamento entre os blocos."""
+    doc = Document()
+    for item in sorted_phrases:
+        block = item['block']
+        for line in block.split('\n'):
+            partes = re.split(r'(\*\*.*?\*\*)', line)
+            p = doc.add_paragraph()
+            for parte in partes:
+                if re.match(r'\*\*.*?\*\*', parte):
+                    conteudo = parte.strip('*')
+                    run = p.add_run(conteudo)
+                    run.bold = True
+                    run.underline = True
+                else:
+                    p.add_run(parte)
+        doc.add_paragraph()  # Adiciona espaço entre os blocos
+    doc.save(filename)
+    print(f"Arquivo '{filename}' criado com sucesso!")
+
+
+def print_keys(sorted_phrases):
+    """Imprime uma lista literal em Python das palavras em negrito em inglês, em ordem alfabética."""
+    keys = [item['key'] for item in sorted_phrases]
+    print("Lista de palavras em negrito (inglês), em ordem alfabética:")
+    print(keys)
+
+
+if __name__ == "__main__":
+    # Extrai e ordena
+    frases = extract_phrases(texto)
+    frases_ordenadas = sort_phrases(frases)
+
+    # Gera documento e imprime lista de chaves
+    build_document(frases_ordenadas)
+    print_keys(frases_ordenadas)
+
+
+--- ARQUIVO: img_country\Pesquisa_img.py ---
+import os
+import time
+import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
+from urllib.parse import quote_plus
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Configurações
+profissoes = ['amazement', 'anxious', 'ashamed', 'Boredom', 'calmness', 'coldness', 'compassion', 'confident', 'confusion', 'courage', 'determination', 'disgusted', 'envious', 'excited', 'guilty', 'homesick', 'humiliated', 'Hunger', 'hurt', 'impatient', 'in love', 
+'in pain', 'jealous', 'joy', 'kindness', 'laziness', 'Loneliness', 'lonely', 'optimism', 'overjoyed', 'proud', 'relieved', 'satisfaction', 'satisfied', 'scared', 'shocked', 'sickness', 'sleepy', 'starving', 'surprised', 'tense', 'terrified', 'Thirst', 
+'tired', 'triumph', 'uncomfortable', 'upset', 'worried']
+
+
+
+def configurar_driver():
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Executar em modo headless (segundo plano)
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3')
+    
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+    return driver
+
+def buscar_imagem(profissao, driver):
+    try:
+        termo = f"{profissao} cartoon"
+        url = f"https://www.google.com/search?q={quote_plus(termo)}&tbm=isch"
+        driver.get(url)
+        
+        # Espera explícita para garantir que as imagens com a classe "DS1iW" sejam carregadas
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "img.DS1iW")))
+        
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        imagens = soup.find_all('img', class_='DS1iW')
+        
+        if imagens:
+            # Tenta pegar o atributo 'data-src' ou 'src' da primeira imagem encontrada
+            src = imagens[0].get('data-src') or imagens[0].get('src')
+            if src:
+                return src
+        return None
+
+    except Exception as e:
+        print(f"Erro na busca: {str(e)}")
+        return None
+
+def baixar_imagem(url, pasta, nome_arquivo):
+    if not url:
+        return
+    
+    os.makedirs(pasta, exist_ok=True)
+    caminho = os.path.join(pasta, nome_arquivo)
+    
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        resposta = requests.get(url, stream=True, timeout=10, headers=headers)
+        if resposta.status_code == 200:
+            with open(caminho, 'wb') as arquivo:
+                for chunk in resposta.iter_content(1024):
+                    if chunk:
+                        arquivo.write(chunk)
+            print(f"Imagem salva: {caminho}")
+        else:
+            print(f"Falha ao baixar a imagem, status: {resposta.status_code}")
+    except Exception as e:
+        print(f"Erro no download: {str(e)}")
+
+def main():
+    driver = configurar_driver()
+    pasta_salvar = "profissoes_imagens"
+
+    for profissao in profissoes:
+        print(f"Buscando: {profissao}")
+        url_imagem = buscar_imagem(profissao, driver)
+        if url_imagem:
+            nome_arquivo = f"{profissao.lower().replace(' ', '_')}.jpg"
+            baixar_imagem(url_imagem, pasta_salvar, nome_arquivo)
+        else:
+            print(f"Nenhuma imagem encontrada para: {profissao}")
+        time.sleep(0.8)  # Intervalo para evitar bloqueio
+
+    driver.quit()
+
+if __name__ == "__main__":
+    main()
+
+
+--- ARQUIVO: img_country\README.md ---
+# img_country
+ 
+
+
+--- ARQUIVO: img_country\app copy.py ---
+import os
+
+# Defina o caminho para o diretório onde os arquivos estão localizados
+diretorio = r"C:\Users\jonat\Documents\GitHub\img_country\country_maps"
+mapeamento = {
+    "Afghanistan": "Afghan",
+    "Albania": "Albanian",
+    "Angola": "Angolan",
+    "Argentina": "Argentinian",  # ou "Argentine"
+    "Australia": "Australian",
+    "Austria": "Austrian",
+    "Bangladesh": "Bangladeshi",
+    "Belarus": "Belarusian",
+    "Belgium": "Belgian",
+    "Belize": "Belizean",
+    "Bhutan": "Bhutanese",
+    "Bolivia": "Bolivian",
+    "Brazil": "Brazilian",
+    "Bulgaria": "Bulgarian",
+    "Cameroon": "Cameroonian",
+    "Canada": "Canadian",
+    "Chile": "Chilean",
+    "China": "Chinese",
+    "Colombia": "Colombian",
+    "Costa_Rica": "Costa_Rican",
+    "Croatia": "Croatian",
+    "Cuba": "Cuban",
+    "Côte_d'Ivoire": "Ivorian",
+    "Denmark": "Danish",
+    "Ecuador": "Ecuadorian",
+    "Egypt": "Egyptian",
+    "El_Salvador": "Salvadoran",
+    "Ethiopia": "Ethiopian",
+    "Finland": "Finnish",
+    "France": "French",
+    "Germany": "German",
+    "Ghana": "Ghanaian",
+    "Greece": "Greek",
+    "Guatemala": "Guatemalan",
+    "Guyana": "Guyanese",
+    "Haiti": "Haitian",
+    "Hungary": "Hungarian",
+    "India": "Indian",
+    "Iran": "Iranian",
+    "Iraq": "Iraqi",
+    "Ireland": "Irish",
+    "Israel": "Israeli",
+    "Italy": "Italian",
+    "Japan": "Japanese",
+    "Jordan": "Jordanian",
+    "Kenya": "Kenyan",
+    "Kuwait": "Kuwaiti",
+    "Lebanon": "Lebanese",
+    "Libya": "Libyan",
+    "Lithuania": "Lithuanian",
+    "Luxembourg": "Luxembourgish",
+    "Madagascar": "Malagasy",
+    "Malaysia": "Malaysian",
+    "Mexico": "Mexican",
+    "Morocco": "Moroccan",
+    "Mozambique": "Mozambican",
+    "Nepal": "Nepalese",
+    "Netherlands": "Dutch",
+    "New_Zealand": "New_Zealander",
+    "Nicaragua": "Nicaraguan",
+    "Nigeria": "Nigerian",
+    "North_Korea": "North_Korean",
+    "Norway": "Norwegian",
+    "Panama": "Panamanian",
+    "Paraguay": "Paraguayan",
+    "Peru": "Peruvian",
+    "Philippines": "Filipino",
+    "Poland": "Polish",
+    "Portugal": "Portuguese",
+    "Romania": "Romanian",
+    "Russia": "Russian",
+    "Senegal": "Senegalese",
+    "Serbia": "Serbian",
+    "Slovakia": "Slovak",
+    "Slovenia": "Slovenian",
+    "South_Africa": "South_African",
+    "South_Korea": "South_Korean",
+    "Spain": "Spanish",
+    "Suriname": "Surinamese",
+    "Sweden": "Swedish",
+    "Switzerland": "Swiss",
+    "Syria": "Syrian",
+    "Thailand": "Thai",
+    "Turkey": "Turkish",
+    "Ukraine": "Ukrainian",
+    "United_Kingdom": "British",
+    "United_States_of_America": "American",
+    "Uruguay": "Uruguayan",
+    "Venezuela": "Venezuelan",
+    "Vietnam": "Vietnamese"
+}
+
+# Itera sobre os arquivos no diretório
+for arquivo in os.listdir(diretorio):
+    if arquivo.endswith('.png'):
+        nome_base = arquivo[:-4]  # Remove a extensão ".png"
+        if nome_base in mapeamento:
+            novo_nome = mapeamento[nome_base] + ".png"
+            caminho_antigo = os.path.join(diretorio, arquivo)
+            caminho_novo = os.path.join(diretorio, novo_nome)
+            os.rename(caminho_antigo, caminho_novo)
+            print(f"Renomeado: {arquivo} -> {novo_nome}")
+        else:
+            print(f"Nenhum mapeamento encontrado para {nome_base}")
+
+--- ARQUIVO: img_country\app.py ---
+import os
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+# Carrega o shapefile
+shapefile_path = r"C:\Users\jonat\Documents\GitHub\img_country\ne_110m_admin_0_countries\ne_110m_admin_0_countries.shp"
+world = gpd.read_file(shapefile_path)
+
+mapping = {
+    "Afghan": "Afghanistan",
+    "Albanian": "Albania",
+    "Angolan": "Angola",
+    "Argentinian": "Argentina",
+    "Australian": "Australia",
+    "Austrian": "Austria",
+    "Bangladeshi": "Bangladesh",
+    "Barbadian": "Barbados",
+    "Belarusian": "Belarus",
+    "Belizean": "Belize",
+    "Belgian": "Belgium",
+    "Bolivian": "Bolivia",
+    "Brazilian": "Brazil",
+    "Bulgarian": "Bulgaria",
+    "Bhutanese": "Bhutan",
+    "Cameroonian": "Cameroon",
+    "Canadian": "Canada",
+    "Chilean": "Chile",
+    "Chinese": "China",
+    "Colombian": "Colombia",
+    "Costa Rican": "Costa Rica",
+    "Croatian": "Croatia",
+    "Cuban": "Cuba",
+    "Danish": "Denmark",
+    "Dominican": "Dominican Republic",
+    "Ecuadorian": "Ecuador",
+    "Egyptian": "Egypt",
+    "Salvadorian": "El Salvador",
+    "English": "United Kingdom",  # Nota: "English" refere-se à Inglaterra, mas o nome oficial é Reino Unido.
+    "Ethiopian": "Ethiopia",
+    "Finnish": "Finland",
+    "French": "France",
+    "Ghanese": "Ghana",
+    "German": "Germany",
+    "Greek": "Greece",
+    "Guatemalan": "Guatemala",
+    "Guyanese": "Guyana",
+    "Haitian": "Haiti",
+    "Hungarian": "Hungary",
+    "Indian": "India",
+    "Iranian": "Iran",
+    "Iraqi": "Iraq",
+    "Irish": "Ireland",
+    "Israeli": "Israel",
+    "Italian": "Italy",
+    "Ivorian": "Côte d'Ivoire",
+    "Japanese": "Japan",
+    "Jordanian": "Jordan",
+    "Kenyan": "Kenya",
+    "Kuwaiti": "Kuwait",
+    "Lebanese": "Lebanon",
+    "Libyan": "Libya",
+    "Lithuanian": "Lithuania",
+    "Luxembourgish": "Luxembourg",
+    "Madagascan": "Madagascar",
+    "Malaysian": "Malaysia",
+    "Mexican": "Mexico",
+    "Moroccan": "Morocco",
+    "Mozambican": "Mozambique",
+    "Nepalese": "Nepal",
+    "Dutch": "Netherlands",
+    "New Zealander": "New Zealand",
+    "Nicaraguan": "Nicaragua",
+    "Nigerian": "Nigeria",
+    "Norwegian": "Norway",
+    "North Korean": "North Korea",
+    "Panamanian": "Panama",
+    "Paraguayan": "Paraguay",
+    "Peruvian": "Peru",
+    "Philippine": "Philippines",
+    "Polish": "Poland",
+    "Portuguese": "Portugal",
+    "Romanian": "Romania",
+    "Russian": "Russia",
+    "Senegalese": "Senegal",
+    "Serbian": "Serbia",
+    "Singaporean": "Singapore",
+    "Syrian": "Syria",
+    "Slovak": "Slovakia",
+    "Slovenian": "Slovenia",
+    "South African": "South Africa",
+    "South Korean": "South Korea",
+    "Spanish": "Spain",
+    "Surinamese": "Suriname",
+    "Swedish": "Sweden",
+    "Swiss": "Switzerland",
+    "Thai": "Thailand",
+    "Turkish": "Turkey",
+    "Ukrainian": "Ukraine",
+    "American": "United States of America",
+    "Uruguayan": "Uruguay",
+    "Venezuelan": "Venezuela",
+    "Vietnamese": "Vietnam"
+}
+
+output_dir = "country_maps"
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+# Parâmetros de referência
+REFERENCE_AREA = 2e6  # Área de referência em km²
+BASE_SIZE = 8         # Tamanho base padrão
+
+for gent, country_name in mapping.items():
+    country_gdf = world[world["NAME"] == country_name].copy()
+    if country_gdf.empty:
+        print(f"País {country_name} não encontrado.")
+        continue
+
+    # Calcula a área do país em km² usando uma projeção de área equivalente (CEA)
+    area_km2 = country_gdf.to_crs({'proj': 'cea'}).geometry.area.sum() / 1e6
+
+    # Configurações ESPECIAIS apenas para a Rússia
+    if country_name == "Russia":
+        # Mantém WGS84 mas ajusta o recorte para evitar divisão
+        minx, miny, maxx, maxy = country_gdf.total_bounds
+        
+        # Corrige a extensão longitudinal se ultrapassar 180°
+        if maxx - minx > 180:
+            minx = -180  # Força o recorte completo
+            maxx = 180
+        
+        # Calcula dimensões para 16:9
+        dx = maxx - minx
+        dy = maxy - miny
+        target_ratio = 16/9
+        
+        if dx/dy > target_ratio:
+            width = dx
+            height = dx / target_ratio
+        else:
+            height = dy
+            width = height * target_ratio
+        
+        # Centraliza no país
+        cx = (minx + maxx) / 2
+        cy = (miny + maxy) / 2
+        xlim = 5  # +5% de margem
+        ylim = 5
+        
+        # Tamanho fixo para melhor qualidade
+        fig_width, fig_height = 12, 6.75  # 16:9 em polegadas
+
+    else:
+        # Comportamento ORIGINAL para outros países
+        minx, miny, maxx, maxy = country_gdf.total_bounds
+        dx = maxx - minx
+        dy = maxy - miny
+        cx = (minx + maxx) / 2
+        cy = (miny + maxy) / 2
+        
+        if country_name == "France":
+            buffer_factor = max(0.2, 0.5*(area_km2/REFERENCE_AREA)**0.5)
+        elif area_km2 < REFERENCE_AREA:
+            buffer_factor = 4.0
+        else:
+            buffer_factor = 0.5*(area_km2/REFERENCE_AREA)**0.5
+            
+        required_half_width = max(dx/2, (16/9)*(dy/2))
+        W_final = required_half_width * (1 + buffer_factor)
+        H_final = W_final * (9/16)
+        
+        xlim = (cx - W_final, cx + W_final)
+        ylim = (cy - H_final, cy + H_final)
+        
+        scale_factor = max(0.5, min(3, (area_km2/REFERENCE_AREA)**0.5))
+        fig_width = BASE_SIZE * scale_factor
+        fig_height = fig_width * (9/16)
+
+    # Criação do mapa (igual para todos)
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+    world.plot(ax=ax, color='lightgrey', edgecolor='white')
+    country_gdf.plot(ax=ax, color='purple')
+    
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    ax.set_title(f"{country_name} ({gent})\nÁrea: {area_km2:,.0f} km²", fontsize=12)
+    ax.set_axis_off()
+
+    # Salvar o mapa
+    name_fixed = country_name.replace(' ', '_')
+    plt.savefig(os.path.join(output_dir, f"{name_fixed}.png"), bbox_inches='tight', dpi=300)
+    plt.close(fig)
+
+
+
+=== DIRETÓRIO: img_country\country_maps ===
+
+--- ARQUIVO: img_country\requirements.txt (latin-1) ---
+ÿþg e o p a n d a s 
+ 
+ m a t p l o t l i b 
+
