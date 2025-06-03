@@ -135,5 +135,5 @@ def main(local):
 
 
 if __name__ == "__main__":
-    local = r'C:\Users\jonat\Documents\GitHub\img_country'
+    local = r'C:\Users\jonat\Documents\GitHub\Sprints\Sprint 12'
     main(local)

@@ -1,0 +1,1639 @@
+
+=== DIRETÓRIO: openrecall ===
+
+--- ARQUIVO: openrecall\README.md ---
+```
+   ____                   ____                  ____   
+  / __ \____  ___  ____  / __ \___  _________ _/ / /   
+ / / / / __ \/ _ \/ __ \/ /_/ / _ \/ ___/ __ `/ / /    
+/ /_/ / /_/ /  __/ / / / _, _/  __/ /__/ /_/ / / /     
+\____/ .___/\___/_/ /_/_/ |_|\___/\___/\__,_/_/_/      
+    /_/                                                                                                                         
+```
+**Enjoy this project?** Show your support by starring it! ⭐️ Thank you!
+
+Join our [Discord](https://discord.gg/RzvCYRgUkx) and/or [Telegram](https://t.me/+5DULWTesqUYwYjY0) community to stay informed of updates!
+
+# Take Control of Your Digital Memory
+
+OpenRecall is a fully open-source, privacy-first alternative to proprietary solutions like Microsoft's Windows Recall or Limitless' Rewind.ai. With OpenRecall, you can easily access your digital history, enhancing your memory and productivity without compromising your privacy.
+
+## What does it do?
+
+OpenRecall captures your digital history through regularly taken snapshots, which are essentially screenshots. The text and images within these screenshots are analyzed and made searchable, allowing you to quickly find specific information by typing relevant keywords into OpenRecall. You can also manually scroll back through your history to revisit past activities.
+
+https://github.com/openrecall/openrecall/assets/16676419/cfc579cb-165b-43e4-9325-9160da6487d2
+
+## Why Choose OpenRecall?
+
+OpenRecall offers several key advantages over closed-source alternatives:
+
+- **Transparency**: OpenRecall is 100% open-source, allowing you to audit the source code for potential backdoors or privacy-invading features.
+- **Cross-platform Support**: OpenRecall works on Windows, macOS, and Linux, giving you the freedom to use it on your preferred operating system.
+- **Privacy-focused**: Your data is stored locally on your device, no internet connection or cloud is required. In addition, you have the option to encrypt the data on a removable disk for added security, read how in our [guide](docs/encryption.md) here. 
+- **Hardware Compatibility**: OpenRecall is designed to work with a [wide range of hardware](docs/hardware.md), unlike proprietary solutions that may require specific certified devices.
+
+<p align="center">
+  <a href="https://twitter.com/elonmusk/status/1792690964672450971" target="_blank">
+    <img src="images/black_mirror.png" alt="Elon Musk Tweet" width="400">
+  </a>
+</p>
+
+## Features
+
+- **Time Travel**: Revisit and explore your past digital activities seamlessly across Windows, macOS, or Linux.
+- **Local-First AI**: OpenRecall harnesses the power of local AI processing to keep your data private and secure.
+- **Semantic Search**: Advanced local OCR interprets your history, providing robust semantic search capabilities.
+- **Full Control Over Storage**: Your data is stored locally, giving you complete control over its management and security.
+
+<p align="center">
+  <img src="images/lisa_rewind.webp" alt="Lisa Rewind" width="400">
+</p>
+
+
+## Comparison
+
+
+
+| Feature          | OpenRecall                    | Windows Recall                                  | Rewind.ai                              |
+|------------------|-------------------------------|--------------------------------------------------|----------------------------------------|
+| Transparency     | Open-source                   | Closed-source                                    | Closed-source                          |
+| Supported Hardware | All                         | Copilot+ certified Windows hardware              | M1/M2 Apple Silicon                    |
+| OS Support       | Windows, macOS, Linux         | Windows                                          | macOS                                  |
+| Privacy          | On-device, self-hosted        | Microsoft's privacy policy applies               | Connected to ChatGPT                   |
+| Cost             | Free                          | Part of Windows 11 (requires specialized hardware) | Monthly subscription                   |
+
+## Quick links
+- [Roadmap](https://github.com/orgs/openrecall/projects/2) and you can [vote for your favorite features](https://github.com/openrecall/openrecall/discussions/9#discussion-6775473)
+- [FAQ](https://github.com/openrecall/openrecall/wiki/FAQ)
+
+## Get Started
+
+### Prerequisites
+- Python 3.11
+- MacOSX/Windows/Linux
+- Git
+
+To install:
+```
+python3 -m pip install --upgrade --no-cache-dir git+https://github.com/openrecall/openrecall.git
+```
+
+To run:
+```
+python3 -m openrecall.app
+```
+Open your browser to:
+[http://localhost:8082](http://localhost:8082) to access OpenRecall.
+
+## Arguments
+`--storage-path` (default: user data path for your OS): allows you to specify the path where the screenshots and database should be stored. We recommend [creating an encrypted volume](docs/encryption.md) to store your data.
+
+`--primary-monitor-only` (default: False): only record the primary monitor (rather than individual screenshots for other monitors)
+
+## Uninstall instructions
+
+To uninstall OpenRecall and remove all stored data:
+
+1. Uninstall the package:
+   ```
+   python3 -m pip uninstall openrecall
+   ```
+
+2. Remove stored data:
+   - On Windows:
+     ```
+     rmdir /s %APPDATA%\openrecall
+     ```
+   - On macOS:
+     ```
+     rm -rf ~/Library/Application\ Support/openrecall
+     ```
+   - On Linux:
+     ```
+     rm -rf ~/.local/share/openrecall
+     ```
+
+Note: If you specified a custom storage path at any time using the `--storage-path` argument, make sure to remove that directory too.
+
+## Contribute
+
+As an open-source project, we welcome contributions from the community. If you'd like to help improve OpenRecall, please submit a pull request or open an issue on our GitHub repository.
+
+## Contact the maintainers
+mail@datatalk.be
+
+## License
+
+OpenRecall is released under the [AGPLv3](https://opensource.org/licenses/AGPL-3.0), ensuring that it remains open and accessible to everyone.
+
+
+
+
+=== DIRETÓRIO: openrecall\openrecall ===
+
+--- ARQUIVO: openrecall\openrecall\__init__.py ---
+
+
+--- ARQUIVO: openrecall\openrecall\app.py ---
+from threading import Thread
+
+import numpy as np
+from flask import Flask, render_template_string, request, send_from_directory
+from jinja2 import BaseLoader
+
+from openrecall.config import appdata_folder, screenshots_path
+from openrecall.database import create_db, get_all_entries, get_timestamps
+from openrecall.nlp import cosine_similarity, get_embedding
+from openrecall.screenshot import record_screenshots_thread
+from openrecall.utils import human_readable_time, timestamp_to_human_readable
+
+app = Flask(__name__)
+
+app.jinja_env.filters["human_readable_time"] = human_readable_time
+app.jinja_env.filters["timestamp_to_human_readable"] = timestamp_to_human_readable
+
+base_template = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRecall</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+  <style>
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .slider {
+      width: 80%;
+    }
+    .slider-value {
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
+    .image-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light">
+  <div class="container">
+    <form class="form-inline my-2 my-lg-0 w-100 d-flex" action="/search" method="get">
+      <input class="form-control flex-grow-1 mr-sm-2" type="search" name="q" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">
+        <i class="bi bi-search"></i>
+      </button>
+    </form>
+  </div>
+</nav>
+{% block content %}
+
+{% endblock %}
+
+  <!-- Bootstrap and jQuery JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+</body>
+</html>
+"""
+
+
+class StringLoader(BaseLoader):
+    def get_source(self, environment, template):
+        if template == "base_template":
+            return base_template, None, lambda: True
+        return None, None, None
+
+
+app.jinja_env.loader = StringLoader()
+
+
+@app.route("/")
+def timeline():
+    # connect to db
+    timestamps = get_timestamps()
+    return render_template_string(
+        """
+{% extends "base_template" %}
+{% block content %}
+{% if timestamps|length > 0 %}
+  <div class="container">
+    <div class="slider-container">
+      <input type="range" class="slider custom-range" id="discreteSlider" min="0" max="{{timestamps|length - 1}}" step="1" value="{{timestamps|length - 1}}">
+      <div class="slider-value" id="sliderValue">{{timestamps[0] | timestamp_to_human_readable }}</div>
+    </div>
+    <div class="image-container">
+      <img id="timestampImage" src="/static/{{timestamps[0]}}.webp" alt="Image for timestamp">
+    </div>
+  </div>
+  <script>
+    const timestamps = {{ timestamps|tojson }};
+    const slider = document.getElementById('discreteSlider');
+    const sliderValue = document.getElementById('sliderValue');
+    const timestampImage = document.getElementById('timestampImage');
+
+    slider.addEventListener('input', function() {
+      const reversedIndex = timestamps.length - 1 - slider.value;
+      const timestamp = timestamps[reversedIndex];
+      sliderValue.textContent = new Date(timestamp * 1000).toLocaleString();  // Convert to human-readable format
+      timestampImage.src = `/static/${timestamp}.webp`;
+    });
+
+    // Initialize the slider with a default value
+    slider.value = timestamps.length - 1;
+    sliderValue.textContent = new Date(timestamps[0] * 1000).toLocaleString();  // Convert to human-readable format
+    timestampImage.src = `/static/${timestamps[0]}.webp`;
+  </script>
+{% else %}
+  <div class="container">
+      <div class="alert alert-info" role="alert">
+          Nothing recorded yet, wait a few seconds.
+      </div>
+  </div>
+{% endif %}
+{% endblock %}
+""",
+        timestamps=timestamps,
+    )
+
+
+@app.route("/search")
+def search():
+    q = request.args.get("q")
+    entries = get_all_entries()
+    embeddings = [np.frombuffer(entry.embedding, dtype=np.float64) for entry in entries]
+    query_embedding = get_embedding(q)
+    similarities = [cosine_similarity(query_embedding, emb) for emb in embeddings]
+    indices = np.argsort(similarities)[::-1]
+    sorted_entries = [entries[i] for i in indices]
+
+    return render_template_string(
+        """
+{% extends "base_template" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {% for entry in entries %}
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        <a href="#" data-toggle="modal" data-target="#modal-{{ loop.index0 }}">
+                            <img src="/static/{{ entry['timestamp'] }}.webp" alt="Image" class="card-img-top">
+                        </a>
+                    </div>
+                </div>
+                <div class="modal fade" id="modal-{{ loop.index0 }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document" style="max-width: none; width: 100vw; height: 100vh; padding: 20px;">
+                        <div class="modal-content" style="height: calc(100vh - 40px); width: calc(100vw - 40px); padding: 0;">
+                            <div class="modal-body" style="padding: 0;">
+                                <img src="/static/{{ entry['timestamp'] }}.webp" alt="Image" style="width: 100%; height: 100%; object-fit: contain; margin: 0 auto;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+""",
+        entries=sorted_entries,
+    )
+
+
+@app.route("/static/<filename>")
+def serve_image(filename):
+    return send_from_directory(screenshots_path, filename)
+
+
+if __name__ == "__main__":
+    create_db()
+
+    print(f"Appdata folder: {appdata_folder}")
+
+    # Start the thread to record screenshots
+    t = Thread(target=record_screenshots_thread)
+    t.start()
+
+    app.run(port=8082)
+
+
+--- ARQUIVO: openrecall\openrecall\config.py ---
+import os
+import sys
+import argparse
+
+parser = argparse.ArgumentParser(description="OpenRecall")
+
+parser.add_argument(
+    "--storage-path",
+    default=None,
+    help="Path to store the screenshots and database",
+)
+
+parser.add_argument(
+    "--primary-monitor-only",
+    action="store_true",
+    help="Only record the primary monitor",
+    default=False,
+)
+
+args = parser.parse_args()
+
+
+def get_appdata_folder(app_name="openrecall"):
+    if sys.platform == "win32":
+        appdata = os.getenv("APPDATA")
+        if not appdata:
+            raise EnvironmentError("APPDATA environment variable is not set.")
+        path = os.path.join(appdata, app_name)
+    elif sys.platform == "darwin":
+        home = os.path.expanduser("~")
+        path = os.path.join(home, "Library", "Application Support", app_name)
+    else:
+        home = os.path.expanduser("~")
+        path = os.path.join(home, ".local", "share", app_name)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
+
+
+if args.storage_path:
+    appdata_folder = args.storage_path
+    screenshots_path = os.path.join(appdata_folder, "screenshots")
+    db_path = os.path.join(appdata_folder, "recall.db")
+else:
+    appdata_folder = get_appdata_folder()
+    db_path = os.path.join(appdata_folder, "recall.db")
+    screenshots_path = os.path.join(appdata_folder, "screenshots")
+
+if not os.path.exists(screenshots_path):
+    try:
+        os.makedirs(screenshots_path)
+    except:
+        pass
+
+
+--- ARQUIVO: openrecall\openrecall\database.py ---
+import sqlite3
+from collections import namedtuple
+import numpy as np
+from typing import Any, List, Optional, Tuple
+
+from openrecall.config import db_path
+
+# Define the structure of a database entry using namedtuple
+Entry = namedtuple("Entry", ["id", "app", "title", "text", "timestamp", "embedding"])
+
+
+def create_db() -> None:
+    """
+    Creates the SQLite database and the 'entries' table if they don't exist.
+
+    The table schema includes columns for an auto-incrementing ID, application name,
+    window title, extracted text, timestamp, and text embedding.
+    """
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """CREATE TABLE IF NOT EXISTS entries (
+                       id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       app TEXT,
+                       title TEXT,
+                       text TEXT,
+                       timestamp INTEGER UNIQUE,
+                       embedding BLOB
+                   )"""
+            )
+            # Add index on timestamp for faster lookups
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS idx_timestamp ON entries (timestamp)"
+            )
+            conn.commit()
+    except sqlite3.Error as e:
+        print(f"Database error during table creation: {e}")
+
+
+def get_all_entries() -> List[Entry]:
+    """
+    Retrieves all entries from the database.
+
+    Returns:
+        List[Entry]: A list of all entries as Entry namedtuples.
+                     Returns an empty list if the table is empty or an error occurs.
+    """
+    entries: List[Entry] = []
+    try:
+        with sqlite3.connect(db_path) as conn:
+            conn.row_factory = sqlite3.Row  # Return rows as dictionary-like objects
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, app, title, text, timestamp, embedding FROM entries ORDER BY timestamp DESC")
+            results = cursor.fetchall()
+            for row in results:
+                # Deserialize the embedding blob back into a NumPy array
+                embedding = np.frombuffer(row["embedding"], dtype=np.float32) # Assuming float32, adjust if needed
+                entries.append(
+                    Entry(
+                        id=row["id"],
+                        app=row["app"],
+                        title=row["title"],
+                        text=row["text"],
+                        timestamp=row["timestamp"],
+                        embedding=embedding,
+                    )
+                )
+    except sqlite3.Error as e:
+        print(f"Database error while fetching all entries: {e}")
+    return entries
+
+
+def get_timestamps() -> List[int]:
+    """
+    Retrieves all timestamps from the database, ordered descending.
+
+    Returns:
+        List[int]: A list of all timestamps.
+                   Returns an empty list if the table is empty or an error occurs.
+    """
+    timestamps: List[int] = []
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            # Use the index for potentially faster retrieval
+            cursor.execute("SELECT timestamp FROM entries ORDER BY timestamp DESC")
+            results = cursor.fetchall()
+            timestamps = [result[0] for result in results]
+    except sqlite3.Error as e:
+        print(f"Database error while fetching timestamps: {e}")
+    return timestamps
+
+
+def insert_entry(
+    text: str, timestamp: int, embedding: np.ndarray, app: str, title: str
+) -> Optional[int]:
+    """
+    Inserts a new entry into the database.
+
+    Args:
+        text (str): The extracted text content.
+        timestamp (int): The Unix timestamp of the screenshot.
+        embedding (np.ndarray): The embedding vector for the text.
+        app (str): The name of the active application.
+        title (str): The title of the active window.
+
+    Returns:
+        Optional[int]: The ID of the newly inserted row, or None if insertion fails.
+                       Prints an error message to stderr on failure.
+    """
+    embedding_bytes: bytes = embedding.astype(np.float32).tobytes() # Ensure consistent dtype
+    last_row_id: Optional[int] = None
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """INSERT INTO entries (text, timestamp, embedding, app, title)
+                   VALUES (?, ?, ?, ?, ?)
+                   ON CONFLICT(timestamp) DO NOTHING""", # Avoid duplicates based on timestamp
+                (text, timestamp, embedding_bytes, app, title),
+            )
+            conn.commit()
+            if cursor.rowcount > 0: # Check if insert actually happened
+                last_row_id = cursor.lastrowid
+            # else:
+                # Optionally log that a duplicate timestamp was encountered
+                # print(f"Skipped inserting entry with duplicate timestamp: {timestamp}")
+
+    except sqlite3.Error as e:
+        # More specific error handling can be added (e.g., IntegrityError for UNIQUE constraint)
+        print(f"Database error during insertion: {e}")
+    return last_row_id
+
+
+--- ARQUIVO: openrecall\openrecall\nlp.py ---
+import numpy as np
+from sentence_transformers import SentenceTransformer
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Constants
+MODEL_NAME: str = "all-MiniLM-L6-v2"
+EMBEDDING_DIM: int = 384  # Dimension for all-MiniLM-L6-v2
+
+# Load the model globally to avoid reloading it on every call
+try:
+    model = SentenceTransformer(MODEL_NAME)
+    logger.info(f"SentenceTransformer model '{MODEL_NAME}' loaded successfully.")
+except Exception as e:
+    logger.error(f"Failed to load SentenceTransformer model '{MODEL_NAME}': {e}")
+    model = None
+
+
+def get_embedding(text: str) -> np.ndarray:
+    """
+    Generates a sentence embedding for the given text.
+
+    Splits the text into lines, encodes each line using the pre-loaded
+    SentenceTransformer model, and returns the mean of the embeddings.
+    Handles empty input text by returning a zero vector.
+
+    Args:
+        text: The input string to embed.
+
+    Returns:
+        A numpy array representing the mean embedding of the text lines,
+        or a zero vector if the input is empty, whitespace only, or the
+        model failed to load. The array type is float32.
+    """
+    if model is None:
+        logger.error("SentenceTransformer model is not loaded. Returning zero vector.")
+        return np.zeros(EMBEDDING_DIM, dtype=np.float32)
+
+    if not text or text.isspace():
+        logger.warning("Input text is empty or whitespace. Returning zero vector.")
+        return np.zeros(EMBEDDING_DIM, dtype=np.float32)
+
+    # Split text into non-empty lines
+    sentences = [line for line in text.split("\n") if line.strip()]
+
+    if not sentences:
+        logger.warning("No non-empty lines found after splitting. Returning zero vector.")
+        return np.zeros(EMBEDDING_DIM, dtype=np.float32)
+
+    try:
+        sentence_embeddings = model.encode(sentences)
+        # Calculate the mean embedding
+        mean_embedding = np.mean(sentence_embeddings, axis=0, dtype=np.float32)
+        return mean_embedding
+    except Exception as e:
+        logger.error(f"Error generating embedding: {e}")
+        return np.zeros(EMBEDDING_DIM, dtype=np.float32)
+
+
+def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
+    """
+    Calculates the cosine similarity between two numpy vectors.
+
+    Args:
+        a: The first numpy array.
+        b: The second numpy array.
+
+    Returns:
+        The cosine similarity score (float between -1 and 1),
+        or 0.0 if either vector has zero magnitude.
+    """
+    norm_a = np.linalg.norm(a)
+    norm_b = np.linalg.norm(b)
+
+    if norm_a == 0 or norm_b == 0:
+        logger.warning("One or both vectors have zero magnitude. Returning 0 similarity.")
+        return 0.0
+
+    similarity = np.dot(a, b) / (norm_a * norm_b)
+    # Clip values to handle potential floating-point inaccuracies slightly outside [-1, 1]
+    return float(np.clip(similarity, -1.0, 1.0))
+
+
+--- ARQUIVO: openrecall\openrecall\ocr.py ---
+from doctr.models import ocr_predictor
+
+ocr = ocr_predictor(
+    pretrained=True,
+    det_arch="db_mobilenet_v3_large",
+    reco_arch="crnn_mobilenet_v3_large",
+)
+
+
+def extract_text_from_image(image):
+    result = ocr([image])
+    text = ""
+    for page in result.pages:
+        for block in page.blocks:
+            for line in block.lines:
+                for word in line.words:
+                    text += word.value + " "
+                text += "\n"
+            text += "\n"
+    return text
+
+
+--- ARQUIVO: openrecall\openrecall\screenshot.py ---
+import os
+import time
+from typing import List, Tuple
+
+import mss
+import numpy as np
+from PIL import Image
+
+from openrecall.config import screenshots_path, args
+from openrecall.database import insert_entry
+from openrecall.nlp import get_embedding
+from openrecall.ocr import extract_text_from_image
+from openrecall.utils import (
+    get_active_app_name,
+    get_active_window_title,
+    is_user_active,
+)
+
+
+def mean_structured_similarity_index(
+    img1: np.ndarray, img2: np.ndarray, L: int = 255
+) -> float:
+    """Calculates the Mean Structural Similarity Index (MSSIM) between two images.
+
+    Args:
+        img1: The first image as a NumPy array (RGB).
+        img2: The second image as a NumPy array (RGB).
+        L: The dynamic range of the pixel values (default is 255).
+
+    Returns:
+        The MSSIM value between the two images (float between -1 and 1).
+    """
+    K1, K2 = 0.01, 0.03
+    C1, C2 = (K1 * L) ** 2, (K2 * L) ** 2
+
+    def rgb2gray(img: np.ndarray) -> np.ndarray:
+        """Converts an RGB image to grayscale."""
+        return 0.2989 * img[..., 0] + 0.5870 * img[..., 1] + 0.1140 * img[..., 2]
+
+    img1_gray: np.ndarray = rgb2gray(img1)
+    img2_gray: np.ndarray = rgb2gray(img2)
+    mu1: float = np.mean(img1_gray)
+    mu2: float = np.mean(img2_gray)
+    sigma1_sq = np.var(img1_gray)
+    sigma2_sq = np.var(img2_gray)
+    sigma12 = np.mean((img1_gray - mu1) * (img2_gray - mu2))
+    ssim_index = ((2 * mu1 * mu2 + C1) * (2 * sigma12 + C2)) / (
+        (mu1**2 + mu2**2 + C1) * (sigma1_sq + sigma2_sq + C2)
+    )
+    return ssim_index
+
+
+def is_similar(
+    img1: np.ndarray, img2: np.ndarray, similarity_threshold: float = 0.9
+) -> bool:
+    """Checks if two images are similar based on MSSIM.
+
+    Args:
+        img1: The first image as a NumPy array.
+        img2: The second image as a NumPy array.
+        similarity_threshold: The threshold above which images are considered similar.
+
+    Returns:
+        True if the images are similar, False otherwise.
+    """
+    similarity: float = mean_structured_similarity_index(img1, img2)
+    return similarity >= similarity_threshold
+
+
+def take_screenshots() -> List[np.ndarray]:
+    """Takes screenshots of all connected monitors or just the primary one.
+
+    Depending on the `args.primary_monitor_only` flag, captures either
+    all monitors or only the primary monitor (index 1 in mss.monitors).
+
+    Returns:
+        A list of screenshots, where each screenshot is a NumPy array (RGB).
+    """
+    screenshots: List[np.ndarray] = []
+    with mss.mss() as sct:
+        # sct.monitors[0] is the combined view of all monitors
+        # sct.monitors[1] is the primary monitor
+        # sct.monitors[2:] are other monitors
+        monitor_indices = range(1, len(sct.monitors))  # Skip the 'all monitors' entry
+
+        if args.primary_monitor_only:
+            monitor_indices = [1]  # Only index 1 corresponds to the primary monitor
+
+        for i in monitor_indices:
+            # Ensure the index is valid before attempting to grab
+            if i < len(sct.monitors):
+                monitor_info = sct.monitors[i]
+                # Grab the screen
+                sct_img = sct.grab(monitor_info)
+                # Convert to numpy array and change BGRA to RGB
+                screenshot = np.array(sct_img)[:, :, [2, 1, 0]]
+                screenshots.append(screenshot)
+            else:
+                # Handle case where primary_monitor_only is True but only one monitor exists (all monitors view)
+                # This case might need specific handling depending on desired behavior.
+                # For now, we just skip if the index is out of bounds.
+                print(f"Warning: Monitor index {i} out of bounds. Skipping.")
+
+    return screenshots
+
+
+def record_screenshots_thread() -> None:
+    """
+    Continuously records screenshots, processes them, and stores relevant data.
+
+    Checks for user activity and image similarity before processing and saving
+    screenshots, associated OCR text, embeddings, and active application info.
+    Runs in an infinite loop, intended to be executed in a separate thread.
+    """
+    # TODO: Move this environment variable setting to the application's entry point.
+    # HACK: Prevents a warning/error from the huggingface/tokenizers library
+    # when used in environments where multiprocessing fork safety is a concern.
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+    last_screenshots: List[np.ndarray] = take_screenshots()
+
+    while True:
+        if not is_user_active():
+            time.sleep(3)  # Wait longer if user is inactive
+            continue
+
+        current_screenshots: List[np.ndarray] = take_screenshots()
+
+        # Ensure we have a last_screenshot for each current_screenshot
+        # This handles cases where monitor setup might change (though unlikely mid-run)
+        if len(last_screenshots) != len(current_screenshots):
+             # If monitor count changes, reset last_screenshots and continue
+             last_screenshots = current_screenshots
+             time.sleep(3)
+             continue
+
+
+        for i, current_screenshot in enumerate(current_screenshots):
+            last_screenshot = last_screenshots[i]
+
+            if not is_similar(current_screenshot, last_screenshot):
+                last_screenshots[i] = current_screenshot  # Update the last screenshot for this monitor
+                image = Image.fromarray(current_screenshot)
+                timestamp = int(time.time())
+                filename = f"{timestamp}_{i}.webp" # Add monitor index to filename for uniqueness
+                filepath = os.path.join(screenshots_path, filename)
+                image.save(
+                    filepath,
+                    format="webp",
+                    lossless=True,
+                )
+                text: str = extract_text_from_image(current_screenshot)
+                # Only proceed if OCR actually extracts text
+                if text.strip():
+                    embedding: np.ndarray = get_embedding(text)
+                    active_app_name: str = get_active_app_name() or "Unknown App"
+                    active_window_title: str = get_active_window_title() or "Unknown Title"
+                    insert_entry(
+                        text, timestamp, embedding, active_app_name, active_window_title, filename # Pass filename
+                    )
+
+        time.sleep(3) # Wait before taking the next screenshot
+
+    return screenshots
+
+
+def record_screenshots_thread():
+    # TODO: fix the error from huggingface tokenizers
+    import os
+
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+    last_screenshots = take_screenshots()
+
+    while True:
+        if not is_user_active():
+            time.sleep(3)
+            continue
+
+        screenshots = take_screenshots()
+
+        for i, screenshot in enumerate(screenshots):
+
+            last_screenshot = last_screenshots[i]
+
+            if not is_similar(screenshot, last_screenshot):
+                last_screenshots[i] = screenshot
+                image = Image.fromarray(screenshot)
+                timestamp = int(time.time())
+                image.save(
+                    os.path.join(screenshots_path, f"{timestamp}.webp"),
+                    format="webp",
+                    lossless=True,
+                )
+                text: str = extract_text_from_image(current_screenshot)
+                # Only proceed if OCR actually extracts text
+                if text.strip():
+                    embedding: np.ndarray = get_embedding(text)
+                    active_app_name: str = get_active_app_name() or "Unknown App"
+                    active_window_title: str = get_active_window_title() or "Unknown Title"
+                    insert_entry(
+                        text, timestamp, embedding, active_app_name, active_window_title, filename # Pass filename
+                    )
+
+        time.sleep(3) # Wait before taking the next screenshot
+
+
+--- ARQUIVO: openrecall\openrecall\utils.py ---
+import sys
+import datetime
+import re
+
+# Platform-specific imports with error handling
+try:
+    import psutil
+    import win32gui
+    import win32process
+    import win32api
+except ImportError:
+    psutil = None
+    win32gui = None
+    win32process = None
+    win32api = None
+
+try:
+    from AppKit import NSWorkspace
+except ImportError:
+    NSWorkspace = None
+
+try:
+    from Quartz import (
+        CGWindowListCopyWindowInfo,
+        kCGNullWindowID,
+        kCGWindowListOptionOnScreenOnly,
+    )
+except ImportError:
+    CGWindowListCopyWindowInfo = None
+    kCGNullWindowID = None
+    kCGWindowListOptionOnScreenOnly = None
+
+try:
+    import subprocess
+except ImportError:
+    subprocess = None  # Should always be available in standard lib
+
+
+def human_readable_time(timestamp: int) -> str:
+    """Converts a Unix timestamp into a human-readable relative time string.
+
+    Args:
+        timestamp: The Unix timestamp (seconds since epoch).
+
+    Returns:
+        A string representing the relative time (e.g., "5 minutes ago").
+    """
+    now = datetime.datetime.now()
+    dt_object = datetime.datetime.fromtimestamp(timestamp)
+    diff = now - dt_object
+    if diff.days > 0:
+        return f"{diff.days} days ago"
+    elif diff.seconds < 60:
+        return f"{diff.seconds} seconds ago"
+    elif diff.seconds < 3600:
+        return f"{diff.seconds // 60} minutes ago"
+    else:
+        return f"{diff.seconds // 3600} hours ago"
+
+
+def timestamp_to_human_readable(timestamp: int) -> str:
+    """Converts a Unix timestamp into a human-readable absolute date/time string.
+
+    Args:
+        timestamp: The Unix timestamp (seconds since epoch).
+
+    Returns:
+        A string representing the absolute date and time (YYYY-MM-DD HH:MM:SS),
+        or an empty string if conversion fails.
+    """
+    try:
+        dt_object = datetime.datetime.fromtimestamp(timestamp)
+        return dt_object.strftime("%Y-%m-%d %H:%M:%S")
+    except:
+        return ""
+
+
+def get_active_app_name_osx() -> str:
+    """Gets the name of the active application on macOS.
+
+    Requires the pyobjc package.
+
+    Returns:
+        The name of the active application, or an empty string if unavailable.
+    """
+    if NSWorkspace is None:
+        return ""  # Indicate unavailability if import failed
+    try:
+        active_app = NSWorkspace.sharedWorkspace().activeApplication()
+        return active_app.get("NSApplicationName", "")
+    except:
+        return ""
+
+
+def get_active_window_title_osx() -> str:
+    """Gets the title of the active window on macOS.
+
+    Requires the pyobjc package. Finds the frontmost window associated with the
+    currently active application.
+
+    Returns:
+        The title of the active window, or an empty string if unavailable.
+    """
+    if CGWindowListCopyWindowInfo is None or kCGNullWindowID is None or kCGWindowListOptionOnScreenOnly is None:
+        return ""  # Indicate unavailability if import failed
+    try:
+        app_name = get_active_app_name_osx()
+        if not app_name:
+            return ""
+
+        # Get window list ordered front-to-back
+        options = kCGWindowListOptionOnScreenOnly
+        window_list = CGWindowListCopyWindowInfo(options, kCGNullWindowID)
+
+        for window in window_list:
+            # Check if the window belongs to the active application
+            if window.get("kCGWindowOwnerName") == app_name:
+                # Check if it's a normal window (layer 0) and has a title
+                if window.get("kCGWindowLayer") == 0 and "kCGWindowName" in window:
+                    title = window.get("kCGWindowName", "")
+                    if title:  # Return the first non-empty title found
+                        return title
+        # Fallback if no suitable window title found for the active app
+        return ""
+    except Exception as e:
+        print(f"Error getting macOS window title: {e}")
+        return ""
+    return ""  # Default if no specific window is found
+
+
+def get_active_app_name_windows() -> str:
+    """Gets the name of the executable for the active window on Windows.
+
+    Requires pywin32 and psutil packages.
+
+    Returns:
+        The executable name (e.g., "chrome.exe"), or an empty string if unavailable.
+    """
+    if not all([psutil, win32gui, win32process]):
+        return ""  # Indicate unavailability if imports failed
+    try:
+        hwnd = win32gui.GetForegroundWindow()
+        if not hwnd:
+            return ""
+        _, pid = win32process.GetWindowThreadProcessId(hwnd)
+        if not pid:
+            return ""
+        exe = psutil.Process(pid).name()
+        return exe
+    except:
+        return ""
+
+
+def get_active_window_title_windows() -> str:
+    """Gets the title of the active window on Windows.
+
+    Requires the pywin32 package.
+
+    Returns:
+        The title of the foreground window, or an empty string if unavailable.
+    """
+    if win32gui is None:
+        return ""  # Indicate unavailability if import failed
+    try:
+        hwnd = win32gui.GetForegroundWindow()
+        if not hwnd:
+            return ""
+        return win32gui.GetWindowText(hwnd)
+    except Exception as e:
+        print(f"Error getting Windows window title: {e}")
+        return ""
+
+
+def get_active_app_name_linux() -> str:
+    """Gets the name of the active application on Linux.
+
+    Placeholder implementation. Requires additional logic (e.g., using xprop
+    or similar tools/libraries).
+
+    Returns:
+        The instance name of the active window's class, or an empty string if
+        unavailable or on error. Requires 'xprop' utility.
+    """
+    if subprocess is None:
+        print("Warning: 'subprocess' module not available for Linux app name check.")
+        return ""
+    try:
+        # Get active window ID
+        active_window_cmd = ['xprop', '-root', '_NET_ACTIVE_WINDOW']
+        active_window_proc = subprocess.Popen(active_window_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = active_window_proc.communicate(timeout=1)
+        if active_window_proc.returncode != 0:
+            print(f"Error running xprop for active window: {stderr.decode()}")
+            return ""
+
+        match = re.search(rb'window id # (0x[0-9a-fA-F]+)', stdout)
+        if not match:
+            print("Could not find active window ID using xprop.")
+            return ""
+        window_id = match.group(1).decode('utf-8')
+
+        # Get WM_CLASS for the window ID
+        wm_class_cmd = ['xprop', '-id', window_id, 'WM_CLASS']
+        wm_class_proc = subprocess.Popen(wm_class_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = wm_class_proc.communicate(timeout=1)
+        if wm_class_proc.returncode != 0:
+            print(f"Error running xprop for WM_CLASS: {stderr.decode()}")
+            return ""
+
+        # WM_CLASS(STRING) = "instance", "class"
+        match = re.search(rb'WM_CLASS\(STRING\) = "([^"]+)"(?:, "([^"]+)")?', stdout)
+        if match:
+            # Return the instance name if available, otherwise the class name
+            instance = match.group(1).decode('utf-8')
+            # class_name = match.group(2).decode('utf-8') if match.group(2) else None
+            return instance
+        else:
+            print(f"Could not parse WM_CLASS for window ID {window_id}.")
+            return ""
+
+    except FileNotFoundError:
+        print("Error: 'xprop' command not found. Please install xprop.")
+        return ""
+    except subprocess.TimeoutExpired:
+        print("Error: 'xprop' command timed out.")
+        return ""
+    except Exception as e:
+         print(f"Error getting Linux app name: {e}")
+         return ""
+
+
+def get_active_window_title_linux() -> str:
+    """Gets the title of the active window on Linux.
+
+    Placeholder implementation. Requires additional logic (e.g., using xprop
+    or similar tools/libraries).
+
+    Returns:
+        The title of the active window, or an empty string if unavailable or on error.
+        Requires 'xprop' utility.
+    """
+    if subprocess is None:
+        print("Warning: 'subprocess' module not available for Linux window title check.")
+        return ""
+    try:
+        # Get active window ID
+        active_window_cmd = ['xprop', '-root', '_NET_ACTIVE_WINDOW']
+        active_window_proc = subprocess.Popen(active_window_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = active_window_proc.communicate(timeout=1)
+        if active_window_proc.returncode != 0:
+            print(f"Error running xprop for active window: {stderr.decode()}")
+            return ""
+
+        match = re.search(rb'window id # (0x[0-9a-fA-F]+)', stdout)
+        if not match:
+            print("Could not find active window ID using xprop.")
+            return ""
+        window_id = match.group(1).decode('utf-8')
+
+        # Get _NET_WM_NAME (UTF-8 title) or WM_NAME (legacy title)
+        for prop_name in ['_NET_WM_NAME', 'WM_NAME']:
+            title_cmd = ['xprop', '-id', window_id, prop_name]
+            title_proc = subprocess.Popen(title_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = title_proc.communicate(timeout=1)
+
+            if title_proc.returncode == 0:
+                if prop_name == '_NET_WM_NAME':
+                    # _NET_WM_NAME(UTF8_STRING) = "Title"
+                    match = re.search(rb'_NET_WM_NAME\(UTF8_STRING\) = "([^"]*)"', stdout)
+                else: # WM_NAME
+                    # WM_NAME(STRING) = "Title"
+                    match = re.search(rb'WM_NAME\([^)]*\) = "([^"]*)"', stdout)
+
+                if match:
+                    title = match.group(1).decode('utf-8', errors='replace') # Decode UTF-8, replace errors
+                    return title
+
+        # If neither property provided a title
+        print(f"Could not find window title for window ID {window_id}.")
+        return ""
+
+    except FileNotFoundError:
+        print("Error: 'xprop' command not found. Please install xprop.")
+        return ""
+    except subprocess.TimeoutExpired:
+        print("Error: 'xprop' command timed out.")
+        return ""
+    except Exception as e:
+        print(f"Error getting Linux window title: {e}")
+        return ""
+    
+def get_active_app_name() -> str:
+    """Gets the active application name for the current platform.
+
+    Returns:
+        The name of the active application, or an empty string if unavailable
+        or the platform is unsupported (or not implemented).
+    """
+    if sys.platform == "win32":
+        return get_active_app_name_windows()
+    elif sys.platform == "darwin":
+        return get_active_app_name_osx()
+    elif sys.platform.startswith("linux"):
+        return get_active_app_name_linux()
+    else:
+        raise NotImplementedError(f"Platform '{sys.platform}' not supported yet for get_active_app_name")
+
+
+def get_active_window_title() -> str:
+    """Gets the active window title for the current platform.
+
+    Returns:
+        The title of the active window, or an empty string if unavailable
+        or the platform is unsupported (or not implemented).
+    """
+    if sys.platform == "win32":
+        return get_active_window_title_windows()
+    elif sys.platform == "darwin":
+        return get_active_window_title_osx()
+    elif sys.platform.startswith("linux"):
+        return get_active_window_title_linux()
+    else:
+        print("Warning: Active window title retrieval not implemented for this platform.")
+        raise NotImplementedError(f"Platform '{sys.platform}' not supported yet for get_active_window_title")
+
+
+def is_user_active_osx() -> bool:
+    """Checks if the user is active on macOS based on HID idle time.
+
+    Requires the pyobjc package and uses the 'ioreg' command. Considers the user
+    active if the idle time is less than 5 seconds.
+
+    Returns:
+        True if the user is considered active, False otherwise. Returns True
+        if the check fails for any reason.
+    """
+    if subprocess is None:
+        print("Warning: 'subprocess' module not available, assuming user is active.")
+        return True
+    try:
+        # Run the 'ioreg' command to get idle time information
+        # Filtering directly with -k is more efficient
+        output = subprocess.check_output(
+            ["ioreg", "-c", "IOHIDSystem", "-r", "-k", "HIDIdleTime"], timeout=1
+        ).decode()
+
+        # Find the line containing "HIDIdleTime"
+        for line in output.splitlines():
+            if "HIDIdleTime" in line:
+                # Extract the idle time value
+                idle_time = int(line.split("=")[-1].strip())
+
+                # Convert idle time from nanoseconds to seconds
+                idle_seconds = idle_time / 1_000_000_000  # Use underscore for clarity
+
+                # If idle time is less than 5 seconds, consider the user active
+                return idle_seconds < 5.0
+
+        # If "HIDIdleTime" is not found (e.g., screen locked), assume inactive?
+        # Or assume active as a fallback? Let's assume active for now.
+        print("Warning: Could not find HIDIdleTime in ioreg output.")
+        return True
+
+    except subprocess.TimeoutExpired:
+        print("Warning: 'ioreg' command timed out, assuming user is active.")
+        return True
+    except subprocess.CalledProcessError as e:
+        # This might happen if the class IOHIDSystem is not found, etc.
+        print(f"Warning: 'ioreg' command failed ({e}), assuming user is active.")
+        return True
+    except Exception as e:
+        print(f"An error occurred during macOS idle check: {e}")
+        # Fallback: assume the user is active
+        return True
+
+
+def is_user_active_windows() -> bool:
+    """Checks if the user is active on Windows based on last input time.
+
+    Requires the pywin32 package. Considers the user active if the last input
+    was less than 5 seconds ago.
+
+    Returns:
+        True if the user is considered active, False otherwise. Returns True
+        if the check fails.
+    """
+    if win32api is None:
+        print("Warning: 'win32api' module not available, assuming user is active.")
+        return True
+    try:
+        last_input_info = win32api.GetLastInputInfo()
+        # GetTickCount returns milliseconds since system start
+        current_time = win32api.GetTickCount()
+        idle_milliseconds = current_time - last_input_info
+        idle_seconds = idle_milliseconds / 1000.0
+        return idle_seconds < 5.0
+    except Exception as e:
+        print(f"An error occurred during Windows idle check: {e}")
+        # Fallback: assume the user is active
+        return True
+
+
+def is_user_active_linux() -> bool:
+    """Checks if the user is active on Linux.
+
+    Placeholder implementation. Requires interaction with the display server
+    (X11 or Wayland) to get idle time. Uses 'xprintidle'.
+
+    Returns:
+        True if the user is considered active (idle < 5s), False otherwise.
+        Returns True if the check fails or 'xprintidle' is not available.
+    """
+    if subprocess is None:
+        print("Warning: 'subprocess' module not available for Linux idle check.")
+        return True # Assume active if module missing
+    try:
+        # Run xprintidle to get idle time in milliseconds
+        output = subprocess.check_output(['xprintidle'], timeout=1).decode()
+        idle_milliseconds = int(output.strip())
+        idle_seconds = idle_milliseconds / 1000.0
+        return idle_seconds < 5.0
+    except FileNotFoundError:
+        print("Warning: 'xprintidle' command not found. Please install xprintidle to check user activity.")
+        return True # Assume active if command missing
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+        print(f"Warning: Could not check Linux idle time ({e}), assuming user is active.")
+        return True
+    except ValueError as e:
+        print(f"Warning: Could not parse output of xprintidle ('{output.strip()}'): {e}, assuming user is active.")
+        return True
+    except Exception as e:
+        print(f"An error occurred during Linux idle check: {e}")
+        return True # Assume active on other errors
+
+
+def is_user_active() -> bool:
+    """Checks if the user is active on the current platform.
+
+    Considers the user active if their last input was recent (e.g., < 5 seconds ago).
+    Implementation varies by platform.
+
+    Returns:
+        True if the user is considered active, False otherwise. Returns True
+        if the check is not implemented or fails.
+    """
+    if sys.platform == "win32":
+        return is_user_active_windows()
+    elif sys.platform == "darwin":
+        return is_user_active_osx()
+    elif sys.platform.startswith("linux"):
+        return is_user_active_linux()
+    else:
+        print(f"Warning: User active check not supported for platform '{sys.platform}', assuming active.")
+        raise NotImplementedError(f"Platform '{sys.platform}' not supported yet for is_user_active")
+
+
+--- ARQUIVO: openrecall\setup.py ---
+import io
+import platform
+
+from setuptools import find_packages, setup
+
+# Read the README.md file
+with io.open("README.md", "r", encoding="utf-8") as f:
+    long_description = f.read()
+
+install_requires = [
+    "Flask==3.0.3",
+    "numpy==1.26.4",
+    "mss==9.0.1",
+    "sentence-transformers==3.0.0",
+    "torch==2.6.0",
+    "torchvision==0.17.0",
+    "shapely==2.0.4",
+    "h5py==3.11.0",
+    "rapidfuzz==3.9.3",
+    "Pillow==10.3.0",
+]
+
+# Define OS-specific dependencies
+extras_require = {
+    "windows": ["pywin32", "psutil"],
+    "macos": ["pyobjc==10.3"],
+    "linux": [],
+    "python-doctr": [
+        "python-doctr @ git+https://github.com/koenvaneijk/doctr.git@af711bc04eb8876a7189923fb51ec44481ee18cd"
+    ],
+}
+
+# Determine the current OS
+current_os = platform.system().lower()
+if current_os.startswith("win"):
+    current_os = "windows"
+elif current_os == "darwin":
+    current_os = "macos"
+elif current_os == "linux":
+    current_os = "linux"
+else:
+    current_os = None
+
+# Include the OS-specific dependencies if the current OS is recognized
+if current_os and current_os in extras_require:
+    install_requires.extend(extras_require[current_os])
+
+install_requires.extend(extras_require.get("python-doctr", []))
+
+setup(
+    name="OpenRecall",
+    version="0.8",
+    packages=find_packages(),
+    install_requires=install_requires,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    extras_require=extras_require,
+)
+
+
+
+=== DIRETÓRIO: openrecall\tests ===
+
+--- ARQUIVO: openrecall\tests\test_config.py ---
+import pytest
+from unittest import mock
+from openrecall.config import get_appdata_folder
+
+
+def test_get_appdata_folder_windows(tmp_path):
+    with mock.patch("sys.platform", "win32"):
+        with mock.patch.dict("os.environ", {"APPDATA": str(tmp_path)}):
+            expected_path = tmp_path / "openrecall"
+            assert get_appdata_folder() == str(expected_path)
+            assert expected_path.exists()
+
+
+def test_get_appdata_folder_windows_no_appdata():
+    with mock.patch("sys.platform", "win32"):
+        with mock.patch.dict("os.environ", {}, clear=True):
+            with pytest.raises(
+                EnvironmentError, match="APPDATA environment variable is not set."
+            ):
+                get_appdata_folder()
+
+
+def test_get_appdata_folder_darwin(tmp_path):
+    with mock.patch("sys.platform", "darwin"):
+        with mock.patch("os.path.expanduser", return_value=str(tmp_path)):
+            expected_path = tmp_path / "Library" / "Application Support" / "openrecall"
+            assert get_appdata_folder() == str(expected_path)
+            assert expected_path.exists()
+
+
+def test_get_appdata_folder_linux(tmp_path):
+    with mock.patch("sys.platform", "linux"):
+        with mock.patch("os.path.expanduser", return_value=str(tmp_path)):
+            expected_path = tmp_path / ".local" / "share" / "openrecall"
+            assert get_appdata_folder() == str(expected_path)
+            assert expected_path.exists()
+
+
+--- ARQUIVO: openrecall\tests\test_database.py ---
+import unittest
+import sqlite3
+import os
+import tempfile
+import time
+import numpy as np
+from unittest.mock import patch
+
+# Temporarily adjust path to import from openrecall
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Now import from openrecall.database, mocking db_path *before* the import
+# Create a temporary file path that will be used by the mock
+temp_db_file = tempfile.NamedTemporaryFile(delete=False)
+mock_db_path = temp_db_file.name
+temp_db_file.close() # Close the file handle, but the file persists because delete=False
+
+with patch('openrecall.config.db_path', mock_db_path):
+    from openrecall.database import (
+        create_db,
+        insert_entry,
+        get_all_entries,
+        get_timestamps,
+        Entry,
+    )
+    # Also patch db_path within the database module itself if it was imported directly there
+    import openrecall.database
+    openrecall.database.db_path = mock_db_path
+
+
+class TestDatabase(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up a temporary database file for all tests in this class."""
+        # The database path is already patched by the module-level patch
+        cls.db_path = mock_db_path
+        # Ensure the database and table are created once
+        create_db()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Remove the temporary database file after all tests."""
+        # Try closing connection if any test left it open (though setUp/tearDown should handle this)
+        try:
+            if hasattr(cls, 'conn') and cls.conn:
+                cls.conn.close()
+        except Exception:
+            pass # Ignore errors during cleanup
+        os.remove(cls.db_path)
+        # Clean up sys.path modification
+        sys.path.pop(0)
+
+
+    def setUp(self):
+        """Connect to the database and clear entries before each test."""
+        self.conn = sqlite3.connect(self.db_path)
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM entries")
+        self.conn.commit()
+        # No need to close here, will be handled by tearDown or next setUp potentially
+
+    def tearDown(self):
+        """Close the database connection after each test."""
+        if self.conn:
+            self.conn.close()
+
+    def test_create_db(self):
+        """Test if create_db creates the table and index."""
+        # Check if table exists
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='entries'")
+        result = cursor.fetchone()
+        self.assertIsNotNone(result)
+        self.assertEqual(result[0], 'entries')
+
+        # Check if index exists
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='index' AND name='idx_timestamp'")
+        result = cursor.fetchone()
+        self.assertIsNotNone(result)
+        self.assertEqual(result[0], 'idx_timestamp')
+
+    def test_02_insert_entry(self):
+        """Test inserting a single entry."""
+        ts = int(time.time())
+        embedding = np.array([0.1, 0.2, 0.3], dtype=np.float32)
+        inserted_id = insert_entry("Test text", ts, embedding, "TestApp", "TestTitle")
+
+        self.assertIsNotNone(inserted_id)
+        self.assertIsInstance(inserted_id, int)
+
+        # Verify the entry exists in the DB
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM entries WHERE id = ?", (inserted_id,))
+        result = cursor.fetchone()
+        self.assertIsNotNone(result)
+        # (id, app, title, text, timestamp, embedding_blob)
+        self.assertEqual(result[1], "TestApp")
+        self.assertEqual(result[2], "TestTitle")
+        self.assertEqual(result[3], "Test text")
+        self.assertEqual(result[4], ts)
+        retrieved_embedding = np.frombuffer(result[5], dtype=np.float32)
+        np.testing.assert_array_almost_equal(retrieved_embedding, embedding)
+
+    def test_insert_duplicate_timestamp(self):
+        """Test inserting an entry with a duplicate timestamp (should be ignored)."""
+        ts = int(time.time())
+        embedding1 = np.array([0.1, 0.2, 0.3], dtype=np.float32)
+        embedding2 = np.array([0.4, 0.5, 0.6], dtype=np.float32)
+
+        id1 = insert_entry("First text", ts, embedding1, "App1", "Title1")
+        self.assertIsNotNone(id1)
+
+        # Try inserting another entry with the same timestamp
+        id2 = insert_entry("Second text", ts, embedding2, "App2", "Title2")
+        self.assertIsNone(id2, "Inserting duplicate timestamp should return None")
+
+        # Verify only the first entry exists
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM entries WHERE timestamp = ?", (ts,))
+        count = cursor.fetchone()[0]
+        self.assertEqual(count, 1)
+
+        cursor.execute("SELECT text FROM entries WHERE timestamp = ?", (ts,))
+        text = cursor.fetchone()[0]
+        self.assertEqual(text, "First text") # Ensure the first one was kept
+
+    def test_get_all_entries_empty(self):
+        """Test getting entries from an empty database."""
+        entries = get_all_entries()
+        self.assertEqual(entries, [])
+
+    def test_get_all_entries_multiple(self):
+        """Test retrieving multiple entries."""
+        ts1 = int(time.time())
+        ts2 = ts1 + 10
+        ts3 = ts1 - 10 # Ensure ordering works
+        emb1 = np.array([0.1] * 5, dtype=np.float32)
+        emb2 = np.array([0.2] * 5, dtype=np.float32)
+        emb3 = np.array([0.3] * 5, dtype=np.float32)
+
+        insert_entry("Text 1", ts1, emb1, "App1", "Title1")
+        insert_entry("Text 2", ts2, emb2, "App2", "Title2")
+        insert_entry("Text 3", ts3, emb3, "App3", "Title3")
+
+        entries = get_all_entries()
+        self.assertEqual(len(entries), 3)
+
+        # Entries should be ordered by timestamp DESC
+        self.assertEqual(entries[0].timestamp, ts2)
+        self.assertEqual(entries[0].text, "Text 2")
+        self.assertEqual(entries[0].app, "App2")
+        self.assertEqual(entries[0].title, "Title2")
+        np.testing.assert_array_almost_equal(entries[0].embedding, emb2)
+        self.assertIsInstance(entries[0].id, int)
+
+        self.assertEqual(entries[1].timestamp, ts1)
+        self.assertEqual(entries[1].text, "Text 1")
+        np.testing.assert_array_almost_equal(entries[1].embedding, emb1)
+
+        self.assertEqual(entries[2].timestamp, ts3)
+        self.assertEqual(entries[2].text, "Text 3")
+        np.testing.assert_array_almost_equal(entries[2].embedding, emb3)
+
+    def test_get_timestamps_empty(self):
+        """Test getting timestamps from an empty database."""
+        timestamps = get_timestamps()
+        self.assertEqual(timestamps, [])
+
+    def test_get_timestamps_multiple(self):
+        """Test retrieving multiple timestamps."""
+        ts1 = int(time.time())
+        ts2 = ts1 + 10
+        ts3 = ts1 - 10
+        emb = np.array([0.1] * 5, dtype=np.float32) # Embedding content doesn't matter here
+
+        insert_entry("T1", ts1, emb, "A1", "T1")
+        insert_entry("T2", ts2, emb, "A2", "T2")
+        insert_entry("T3", ts3, emb, "A3", "T3")
+
+        timestamps = get_timestamps()
+        self.assertEqual(len(timestamps), 3)
+        # Timestamps should be ordered DESC
+        self.assertEqual(timestamps, [ts2, ts1, ts3])
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+--- ARQUIVO: openrecall\tests\test_nlp.py ---
+import pytest
+import numpy as np
+from openrecall.nlp import cosine_similarity
+
+
+def test_cosine_similarity_identical_vectors():
+    a = np.array([1, 0, 0])
+    b = np.array([1, 0, 0])
+    assert cosine_similarity(a, b) == 1.0
+
+
+def test_cosine_similarity_orthogonal_vectors():
+    a = np.array([1, 0, 0])
+    b = np.array([0, 1, 0])
+    assert cosine_similarity(a, b) == 0.0
+
+
+def test_cosine_similarity_opposite_vectors():
+    a = np.array([1, 0, 0])
+    b = np.array([-1, 0, 0])
+    assert cosine_similarity(a, b) == -1.0
+
+
+def test_cosine_similarity_non_unit_vectors():
+    a = np.array([3, 0, 0])
+    b = np.array([1, 0, 0])
+    assert cosine_similarity(a, b) == 1.0
+
+
+def test_cosine_similarity_arbitrary_vectors():
+    a = np.array([1, 2, 3])
+    b = np.array([4, 5, 6])
+    expected_similarity = np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+    assert cosine_similarity(a, b) == pytest.approx(expected_similarity)
+
+
+def test_cosine_similarity_zero_vector():
+    a = np.array([0, 0, 0])
+    b = np.array([1, 0, 0])
+    result = cosine_similarity(a, b)
+    assert np.isnan(
+        result
+    ), "Expected result to be NaN when one of the vectors is a zero vector"
+
+
